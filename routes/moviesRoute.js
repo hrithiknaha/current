@@ -9,5 +9,6 @@ router.get("/:movieId", moviesController.readMovie);
 router.get("/", moviesController.readMovies);
 router.delete("/:movieId", moviesController.deleteMovie);
 router.patch("/rating", moviesController.editRating);
+router.patch("/date", moviesController.editDateWatched);
 
 module.exports = router;

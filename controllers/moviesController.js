@@ -5,10 +5,6 @@ const { logEvents } = require("../middlewares/logger");
 
 const Movie = require("../models/Movies");
 
-axios.defaults.baseURL = "https://api.themoviedb.org/3";
-axios.defaults.headers.common["Authorization"] = "Bearer " + process.env.API_AUTH_TOKEN;
-axios.defaults.headers.post["Content-Type"] = "application/json";
-
 const movieController = {
     //TMDB
     searchMovie: async (req, res, next) => {
@@ -32,7 +28,7 @@ const movieController = {
     getMovieDetails: async (req, res, next) => {
         try {
             logEvents("Fetching for movie from tmdb" + req.params.movieId, "appLog.log");
-            const response = await axios.get(`/movie/${req.params.movieId}`);
+            const response = await axios.get(`/movie/${req.params.movieId}?append_to_response=credits`);
 
             logEvents("Response sent for " + req.params.movieId, "appLog.log");
             return res.status(200).json(response.data);
@@ -46,7 +42,7 @@ const movieController = {
         try {
             logEvents("Fetching for movie " + req.params.movieId, "appLog.log");
             const { movieId } = req.params;
-            const movie = await Movie.findOne({ movieId });
+            const movie = await Movie.findOne({ movie_id: movieId });
             if (!movie) return res.status(200).json({});
 
             return res.status(200).json(movie);
@@ -68,16 +64,38 @@ const movieController = {
     },
     addMovie: async (req, res, next) => {
         try {
-            logEvents("Fetching for movie " + req.body.movieId, "appLog.log");
+            logEvents("Fetching for movie " + req.body.movie_id, "appLog.log");
 
-            const { theatre, rating, movieId } = req.body;
+            const { theatre, rating, movie_id, date_watched } = req.body;
 
-            const response = await axios.get(`/movie/${movieId}`);
-            const { original_title, genres } = response.data;
+            const response = await axios.get(`/movie/${movie_id}?append_to_response=credits`);
+            const { original_title, genres, runtime, credits } = response.data;
 
-            logEvents("Adding movie " + req.params.movieId, "appLog.log");
-            Movie.create({ movieId, title: original_title, theatre, rating, genres });
+            const casts = credits.cast;
+            const topCast = casts
+                .filter((cast) => cast.order < 5)
+                .map((cast) => {
+                    return {
+                        id: cast.id,
+                        name: cast.name,
+                        character: cast.character,
+                    };
+                });
 
+            const crews = credits.crew;
+            const topCrew = crews
+                .filter((crew) => crew.job === "Director" || crew.job === "Director of Photography" || crew.job === "Screenplay" || crew.job === "Story")
+                .map((c) => {
+                    return {
+                        id: c.id,
+                        name: c.name,
+                        job: c.job,
+                    };
+                });
+
+            Movie.create({ movie_id, title: original_title, theatre, rating, genres, date_watched, runtime, cast: topCast, crew: topCrew });
+
+            logEvents("Adding movie " + movie_id, "appLog.log");
             return res.status(201).json("Created");
         } catch (error) {
             console.log("Error!!", error);
@@ -89,7 +107,7 @@ const movieController = {
             logEvents("Movie Deleted " + req.params.movieId, "appLog.log");
 
             const { movieId } = req.params;
-            const deletedMovie = await Movie.findOneAndDelete({ movieId });
+            const deletedMovie = await Movie.findOneAndDelete({ movie_id: movieId });
 
             if (!deletedMovie) return res.status(200).json("Movie not found");
             return res.status(200).json("Deleted");
@@ -100,15 +118,31 @@ const movieController = {
 
     editRating: async (req, res, next) => {
         try {
-            logEvents("Editing rating for  " + req.body.movieId, "appLog.log");
-            const { movieId, rating } = req.body;
+            logEvents("Editing rating for  " + req.body.movie_id, "appLog.log");
+            const { movie_id, rating } = req.body;
 
-            const movie = await Movie.findOne({ movieId });
+            const movie = await Movie.findOne({ movie_id });
             if (!movie) return res.status(200).json("Movie not found");
 
             movie.rating = rating;
             movie.save();
             return res.status(200).json("Rating edited");
+        } catch (error) {
+            console.log("Error!!", error);
+        }
+    },
+
+    editDateWatched: async (req, res, next) => {
+        try {
+            logEvents("Editing date watched for  " + req.body.movie_id, "appLog.log");
+            const { movie_id, date_watched } = req.body;
+
+            const movie = await Movie.findOne({ movie_id });
+            if (!movie) return res.status(200).json("Movie not found");
+
+            movie.date_watched = date_watched;
+            movie.save();
+            return res.status(200).json("Date watched edited");
         } catch (error) {
             console.log("Error!!", error);
         }
