@@ -93,7 +93,7 @@ const movieController = {
                     };
                 });
 
-            Movie.create({ movie_id, title: original_title, theatre, rating, genres, date_watched, runtime, cast: topCast, crew: topCrew });
+            await Movie.create({ movie_id, title: original_title, theatre, rating, genres, date_watched, runtime, cast: topCast, crew: topCrew });
 
             logEvents("Adding movie " + movie_id, "appLog.log");
             return res.status(201).json("Created");
