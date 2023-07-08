@@ -1,9 +1,10 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const axios = require("axios");
 const app = express();
-const dotenv = require("dotenv").config();
-var cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
 
 const connectDB = require("./configs/db");
 const { logger } = require("./middlewares/logger");
@@ -12,6 +13,8 @@ const moviesRoute = require("./routes/moviesRoute");
 const usersRoute = require("./routes/usersRoute");
 const statisticsRoute = require("./routes/statisticsRoute");
 const tmdbRoute = require("./routes/tmdbRoute");
+
+const errorHandler = require("./middlewares/errorHandler");
 
 connectDB();
 app.use(logger);
@@ -27,6 +30,8 @@ app.use("/api/tmdb", tmdbRoute);
 app.use("/api/auth", usersRoute);
 app.use("/api/movies", verifyJWT, moviesRoute);
 app.use("/api/stats", verifyJWT, statisticsRoute);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5001;
 
