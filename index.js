@@ -5,7 +5,9 @@ const mongoose = require("mongoose");
 const axios = require("axios");
 const app = express();
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
+const corsOptions = require("./configs/corsOptions");
 const connectDB = require("./configs/db");
 const { logger } = require("./middlewares/logger");
 const verifyJWT = require("./middlewares/verifyJWT");
@@ -22,6 +24,7 @@ app.use(logger);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors(corsOptions));
 
 axios.defaults.baseURL = "https://api.themoviedb.org/3";
 axios.defaults.headers.common["Authorization"] = "Bearer " + process.env.API_AUTH_TOKEN;
