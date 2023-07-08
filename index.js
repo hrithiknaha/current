@@ -11,6 +11,7 @@ const verifyJWT = require("./middlewares/verifyJWT");
 const moviesRoute = require("./routes/moviesRoute");
 const usersRoute = require("./routes/usersRoute");
 const statisticsRoute = require("./routes/statisticsRoute");
+const tmdbRoute = require("./routes/tmdbRoute");
 
 connectDB();
 app.use(logger);
@@ -22,8 +23,9 @@ axios.defaults.baseURL = "https://api.themoviedb.org/3";
 axios.defaults.headers.common["Authorization"] = "Bearer " + process.env.API_AUTH_TOKEN;
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
-app.use("/api/movies", verifyJWT, moviesRoute);
+app.use("/api/tmdb", tmdbRoute);
 app.use("/api/auth", usersRoute);
+app.use("/api/movies", verifyJWT, moviesRoute);
 app.use("/api/stats", verifyJWT, statisticsRoute);
 
 const PORT = process.env.PORT || 5001;
