@@ -11,6 +11,7 @@ const statisticsController = {
         let genreCount = {};
         let totalRuntime = 0;
         let totalRating = 0;
+        let totalMovies = movies.length;
 
         for (const movie of movies) {
             for (const genre of movie.genres) {
@@ -22,7 +23,7 @@ const statisticsController = {
 
         const avgRating = totalRating / movies.length;
 
-        return res.status(200).json({ genreCount, totalRuntime, avgRating });
+        return res.status(200).json({ genreCount, totalRuntime, avgRating, totalMovies });
     },
 };
 
