@@ -71,6 +71,8 @@ const movieController = {
             const response = await axios.get(`/movie/${movie_id}?append_to_response=credits`);
             const { original_title, genres, runtime, credits } = response.data;
 
+            const genreName = genres.map((genre) => genre.name);
+
             const casts = credits.cast;
             const topCast = casts
                 .filter((cast) => cast.order < 5)
@@ -93,7 +95,7 @@ const movieController = {
                     };
                 });
 
-            await Movie.create({ movie_id, title: original_title, theatre, rating, genres, date_watched, runtime, cast: topCast, crew: topCrew });
+            await Movie.create({ movie_id, title: original_title, theatre, rating, genres: genreName, date_watched, runtime, cast: topCast, crew: topCrew });
 
             logEvents("Adding movie " + movie_id, "appLog.log");
             return res.status(201).json("Created");

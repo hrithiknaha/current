@@ -1,7 +1,6 @@
 const router = require("express").Router();
 
 const moviesController = require("../controllers/moviesController");
-const verifyJWT = require("../middlewares/verifyJWT");
 
 router.post("/tmdb/search", moviesController.searchMovie);
 router.get("/tmdb/:movieId", moviesController.getMovieDetails);
