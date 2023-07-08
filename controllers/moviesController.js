@@ -4,6 +4,7 @@ const searchAppender = require("../helpers/searchLodash");
 const { logEvents } = require("../middlewares/logger");
 
 const Movie = require("../models/Movies");
+const User = require("../models/Users");
 
 const movieController = {
     //TMDB
@@ -41,8 +42,11 @@ const movieController = {
     readMovie: async (req, res, next) => {
         try {
             logEvents("Fetching for movie " + req.params.movieId, "appLog.log");
-            const { movieId } = req.params;
-            const movie = await Movie.findOne({ movie_id: movieId });
+
+            const movies = (await User.findOne({ username: req.user }).populate("movies").exec()).movies;
+
+            const movie = movies.filter((movie) => movie.movie_id === parseInt(req.params.movieId));
+
             if (!movie) return res.status(200).json({});
 
             return res.status(200).json(movie);
@@ -54,7 +58,8 @@ const movieController = {
     readMovies: async (req, res, next) => {
         try {
             logEvents("Fetching all movies", "appLog.log");
-            const movies = await Movie.find();
+            const movies = (await User.findOne({ username: req.user }).populate("movies").exec()).movies;
+
             if (movies.length == 0) return res.status(200).json([]);
 
             return res.status(200).json(movies);
@@ -95,7 +100,9 @@ const movieController = {
                     };
                 });
 
-            await Movie.create({ movie_id, title: original_title, theatre, rating, genres: genreName, date_watched, runtime, cast: topCast, crew: topCrew });
+            const movie = await Movie.create({ movie_id, title: original_title, theatre, rating, genres: genreName, date_watched, runtime, cast: topCast, crew: topCrew });
+
+            await User.findOneAndUpdate({ username: req.user }, { $push: { movies: movie._id } });
 
             logEvents("Adding movie " + movie_id, "appLog.log");
             return res.status(201).json("Created");
@@ -110,6 +117,9 @@ const movieController = {
 
             const { movieId } = req.params;
             const deletedMovie = await Movie.findOneAndDelete({ movie_id: movieId });
+            console.log(deletedMovie);
+
+            await User.findOneAndUpdate({ username: req.user }, { $pull: { movies: deletedMovie._id } });
 
             if (!deletedMovie) return res.status(200).json("Movie not found");
             return res.status(200).json("Deleted");
@@ -123,11 +133,13 @@ const movieController = {
             logEvents("Editing rating for  " + req.body.movie_id, "appLog.log");
             const { movie_id, rating } = req.body;
 
-            const movie = await Movie.findOne({ movie_id });
+            const movies = (await User.findOne({ username: req.user }).populate("movies")).movies;
+            let movie = movies.filter((movie) => movie.movie_id === parseInt(movie_id))[0];
+
             if (!movie) return res.status(200).json("Movie not found");
 
-            movie.rating = rating;
-            movie.save();
+            await Movie.findOneAndUpdate({ movie_id }, { $set: { rating } });
+
             return res.status(200).json("Rating edited");
         } catch (error) {
             console.log("Error!!", error);
@@ -139,11 +151,13 @@ const movieController = {
             logEvents("Editing date watched for  " + req.body.movie_id, "appLog.log");
             const { movie_id, date_watched } = req.body;
 
-            const movie = await Movie.findOne({ movie_id });
+            const movies = (await User.findOne({ username: req.user }).populate("movies")).movies;
+            let movie = movies.filter((movie) => movie.movie_id === parseInt(movie_id))[0];
+
             if (!movie) return res.status(200).json("Movie not found");
 
-            movie.date_watched = date_watched;
-            movie.save();
+            await Movie.findOneAndUpdate({ movie_id }, { $set: { date_watched } });
+
             return res.status(200).json("Date watched edited");
         } catch (error) {
             console.log("Error!!", error);

@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema(
         lastname: { type: String, required: true },
         username: { type: String, required: true },
         password: { type: String, required: true },
+        movies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
     },
     { timeseries: true, timestamps: true }
 );

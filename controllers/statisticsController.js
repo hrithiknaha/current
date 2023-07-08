@@ -1,8 +1,11 @@
-const Movies = require("../models/Movies");
+const Movie = require("../models/Movies");
+const User = require("../models/Users");
 
 const statisticsController = {
     totalStats: async (req, res, next) => {
-        const movies = await Movies.find();
+        const user = await User.findOne({ username: req.user }).populate("movies");
+
+        const movies = user.movies;
 
         let genreCount = {};
         let totalRuntime = 0;
