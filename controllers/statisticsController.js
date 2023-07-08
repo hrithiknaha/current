@@ -4,17 +4,24 @@ const statisticsController = {
     totalStats: async (req, res, next) => {
         const movies = await Movies.find();
 
-        const genres = movies
-            .map((movie) => movie.genres)
-            .flat()
-            .reduce((countMap, genre) => {
-                countMap[genre] = (countMap[genre] || 0) + 1;
-                return countMap;
-            }, {});
-        const runtimes = movies.map((movie) => movie.runtime).reduce((a, c) => a + c);
-        const ratings = movies.map((movie) => movie.rating).reduce((a, c) => a + c) / movies.length;
+        let genreCount = {};
+        let totalRuntime = 0;
+        let totalRating = 0;
 
-        return res.status(200).json({ genres, runtimes, ratings });
+        for (const movie of movies) {
+            // Count genre occurrences
+            for (const genre of movie.genres) {
+                genreCount[genre] = (genreCount[genre] || 0) + 1;
+            }
+
+            // Accumulate runtime and rating
+            totalRuntime += movie.runtime;
+            totalRating += movie.rating;
+        }
+
+        const avgRating = totalRating / movies.length;
+
+        return res.status(200).json({ genreCount, totalRuntime, avgRating });
     },
 };
 
