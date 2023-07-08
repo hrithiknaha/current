@@ -8,39 +8,50 @@ const User = require("../models/Users");
 const movieController = {
     readMovie: async (req, res, next) => {
         try {
-            logEvents("Fetching for movie " + req.params.movieId, "appLog.log");
+            logEvents(`Searching resource ${req.params.movieId} for user ${req.user}`, "appLog.log");
 
             const movies = (await User.findOne({ username: req.user }).populate("movies").exec()).movies;
 
             const movie = movies.filter((movie) => movie.movie_id === parseInt(req.params.movieId));
 
-            if (!movie) return res.status(200).json({});
+            if (movie.length === 0)
+                return res.status(404).json({
+                    success: false,
+                    status_message: "The resource you requested could not be found.",
+                    data: {},
+                });
 
             return res.status(200).json(movie);
         } catch (error) {
-            console.log("Error!!", error);
+            next(error);
         }
     },
 
     readMovies: async (req, res, next) => {
         try {
-            logEvents("Fetching all movies", "appLog.log");
+            logEvents(`Searching all resources for user ${req.user}`, "appLog.log");
             const movies = (await User.findOne({ username: req.user }).populate("movies").exec()).movies;
 
-            if (movies.length == 0) return res.status(200).json([]);
+            if (movies.length == 0)
+                return res.status(404).json({
+                    success: false,
+                    status_message: "The resources you requested could not be found.",
+                    data: [],
+                });
 
             return res.status(200).json(movies);
         } catch (error) {
-            console.log("Error!!", error);
+            next(error);
         }
     },
     addMovie: async (req, res, next) => {
         try {
-            logEvents("Fetching for movie " + req.body.movie_id, "appLog.log");
+            logEvents(`Inserting resource ${req.body.movie_id} for user ${req.user}`, "appLog.log");
 
             const { theatre, rating, movie_id, date_watched } = req.body;
 
             const response = await axios.get(`/movie/${movie_id}?append_to_response=credits`);
+
             const { original_title, genres, runtime, credits } = response.data;
 
             const genreName = genres.map((genre) => genre.name);
@@ -71,63 +82,88 @@ const movieController = {
 
             await User.findOneAndUpdate({ username: req.user }, { $push: { movies: movie._id } });
 
-            logEvents("Adding movie " + movie_id, "appLog.log");
-            return res.status(201).json("Created");
+            return res.status(201).json({
+                success: true,
+                status_message: "The resources was inserted into database.",
+                data: movie,
+            });
         } catch (error) {
-            console.log("Error!!", error);
+            next(error);
         }
     },
 
     deleteMovie: async (req, res, next) => {
         try {
-            logEvents("Movie Deleted " + req.params.movieId, "appLog.log");
+            logEvents(`Deleting resource ${req.params.movieId} for user ${req.user}`, "appLog.log");
 
-            const { movieId } = req.params;
-            const deletedMovie = await Movie.findOneAndDelete({ movie_id: movieId });
-            console.log(deletedMovie);
+            const deletedMovie = await Movie.findOneAndDelete({ movie_id: req.params.movieId });
+
+            if (!deletedMovie)
+                return res.status(404).json({
+                    success: false,
+                    status_message: "The resource you requested could not be found.",
+                });
 
             await User.findOneAndUpdate({ username: req.user }, { $pull: { movies: deletedMovie._id } });
 
-            if (!deletedMovie) return res.status(200).json("Movie not found");
-            return res.status(200).json("Deleted");
+            return res.status(200).json({
+                success: true,
+                status_message: "The resource you requested was deleted from database.",
+            });
         } catch (error) {
-            console.log("Error!!", error);
+            next(error);
         }
     },
 
     editRating: async (req, res, next) => {
         try {
-            logEvents("Editing rating for  " + req.body.movie_id, "appLog.log");
+            logEvents(`Editing rating of resource ${req.body.movie_id} for user ${req.user}`, "appLog.log");
+
             const { movie_id, rating } = req.body;
 
             const movies = (await User.findOne({ username: req.user }).populate("movies")).movies;
             let movie = movies.filter((movie) => movie.movie_id === parseInt(movie_id))[0];
 
-            if (!movie) return res.status(200).json("Movie not found");
+            if (!movie)
+                return res.status(404).json({
+                    success: false,
+                    status_message: "The resource you requested could not be found.",
+                });
 
             await Movie.findOneAndUpdate({ movie_id }, { $set: { rating } });
 
-            return res.status(200).json("Rating edited");
+            return res.status(200).json({
+                success: true,
+                status_message: "The resource was updated.",
+            });
         } catch (error) {
-            console.log("Error!!", error);
+            next(next);
         }
     },
 
     editDateWatched: async (req, res, next) => {
         try {
-            logEvents("Editing date watched for  " + req.body.movie_id, "appLog.log");
+            logEvents(`Editing date_watched of resource ${req.body.movie_id} for user ${req.user}`, "appLog.log");
+
             const { movie_id, date_watched } = req.body;
 
             const movies = (await User.findOne({ username: req.user }).populate("movies")).movies;
             let movie = movies.filter((movie) => movie.movie_id === parseInt(movie_id))[0];
 
-            if (!movie) return res.status(200).json("Movie not found");
+            if (!movie)
+                return res.status(404).json({
+                    success: false,
+                    status_message: "The resource you requested could not be found.",
+                });
 
             await Movie.findOneAndUpdate({ movie_id }, { $set: { date_watched } });
 
-            return res.status(200).json("Date watched edited");
+            return res.status(200).json({
+                success: true,
+                status_message: "The resource was updated.",
+            });
         } catch (error) {
-            console.log("Error!!", error);
+            next(error);
         }
     },
 };

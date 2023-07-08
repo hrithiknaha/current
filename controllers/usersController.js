@@ -6,80 +6,130 @@ const User = require("../models/Users");
 
 const usersController = {
     registerUser: async (req, res, next) => {
-        logEvents("Registering new user", "appLog.log");
+        try {
+            logEvents(`Registrating new user ${req.body.username}`, "appLog.log");
 
-        const { firstname, lastname, username, password } = req.body;
+            const { firstname, lastname, username, password } = req.body;
 
-        if (!firstname || !lastname || !username || !password) return res.status(400).json("All fields are required");
+            if (!firstname || !lastname || !username || !password)
+                return res.status(400).json({
+                    success: false,
+                    status_message: "Required fields are missing.",
+                });
 
-        const duplicate = await User.findOne({ username });
+            const duplicate = await User.findOne({ username });
 
-        if (duplicate) return res.status(409).json("Username already exists");
+            if (duplicate)
+                return res.status(409).json({
+                    success: false,
+                    status_message: "Username is not unique.",
+                });
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await bcrypt.hash(password, 10);
 
-        const user = await User.create({ firstname, lastname, username, password: hashedPassword });
-        return res.status(201).json("User registered");
+            await User.create({ firstname, lastname, username, password: hashedPassword });
+            return res.status(201).json({
+                success: true,
+                status_message: "New user registered.",
+                data: { username },
+            });
+        } catch (error) {
+            next(error);
+        }
     },
 
     loginUser: async (req, res, next) => {
-        logEvents("Logging with user", "appLog.log");
+        try {
+            logEvents(`Logging with user ${req.body.username}`, "appLog.log");
 
-        const { username, password } = req.body;
+            const { username, password } = req.body;
 
-        if (!username || !password) return res.status(400).json("All fields are required");
+            if (!username || !password)
+                return res.status(400).json({
+                    success: false,
+                    status_message: "Required fields are missing.",
+                });
 
-        const foundUser = await User.findOne({ username });
+            const foundUser = await User.findOne({ username });
 
-        if (!foundUser) return res.status(401).json("Unauthorized");
+            if (!foundUser)
+                return res.status(401).json({
+                    success: false,
+                    status_message: "Request Unauthorized",
+                });
 
-        const match = bcrypt.compare(password, foundUser.password);
-        if (!match) return res.status(401).json({ message: "Unauthorized" });
+            const match = bcrypt.compare(password, foundUser.password);
+            if (!match)
+                return res.status(401).json({
+                    success: false,
+                    status_message: "Credentials doe not match. Request Unauthorized",
+                });
 
-        const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
-        const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+            const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+            const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
-        res.cookie("jwt", refreshToken, {
-            httpOnly: true, //accessible only by web server
-            secure: true, //https
-            sameSite: "None", //cross-site cookie
-            maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
-        });
+            res.cookie("jwt", refreshToken, {
+                httpOnly: true, //accessible only by web server
+                secure: true, //https
+                sameSite: "None", //cross-site cookie
+                maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
+            });
 
-        res.json({ accessToken, expiresIn: 15 * 60 * 1000 });
+            res.status(200).json({ accessToken, expiresIn: 15 * 60 * 1000 });
+        } catch (error) {
+            next(error);
+        }
     },
 
     refreshUser: async (req, res, next) => {
         try {
-            logEvents("Refreshing user token", "appLog.log");
-            const cookies = req.cookies;
+            logEvents("Refreshing token for user", "appLog.log");
 
-            if (!cookies?.jwt) return res.status(401).json("Unauthorized");
+            const refreshToken = req.cookies.jwt;
 
-            const refreshToken = cookies.jwt;
+            if (!cookies?.jwt)
+                return res.status(401).json({
+                    success: false,
+                    status_message: "Cookie does not have the required token. Request Unauthorized.",
+                });
 
             const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
             const foundUser = await User.findOne({ username: decoded.username });
 
-            if (!foundUser) return res.status(401).json({ message: "Unauthorized" });
+            if (!foundUser)
+                return res.status(401).json({
+                    success: false,
+                    status_message: "No match found. Request Unauthorized.",
+                });
 
             const accessToken = jwt.sign({ username: decoded.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
 
             res.json({ accessToken, expiresIn: 15 * 60 * 1000 });
         } catch (error) {
-            console.log(error);
-            return res.status(403).json("Forbidden");
+            next(error);
         }
     },
 
     logoutUser: async (req, res, next) => {
-        logEvents("Logout user", "appLog.log");
+        try {
+            logEvents("User Logout", "appLog.log");
 
-        const cookies = req.cookies;
-        if (!cookies?.jwt) return res.sendStatus(204); //No content
-        res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
-        res.json({ message: "Cookie cleared" });
+            const cookies = req.cookies;
+            if (!cookies?.jwt)
+                return res.status(204).json({
+                    success: true,
+                    status_message: "No Cookie found.",
+                }); //No content
+
+            res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+            res.json({
+                success: true,
+                status_message: "Cookies cleared. User logged out.",
+            });
+        } catch (error) {
+            next(error);
+        }
     },
 };
 

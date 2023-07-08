@@ -1,23 +1,21 @@
-const Movie = require("../models/Movies");
 const User = require("../models/Users");
+
+const { logEvents } = require("../middlewares/logger");
 
 const statisticsController = {
     totalStats: async (req, res, next) => {
-        const user = await User.findOne({ username: req.user }).populate("movies");
+        logEvents(`Fetching stats of resource ${req.body.movie_id} for user ${req.user}`, "appLog.log");
 
-        const movies = user.movies;
+        const movies = (await User.findOne({ username: req.user }).populate("movies")).movies;
 
         let genreCount = {};
         let totalRuntime = 0;
         let totalRating = 0;
 
         for (const movie of movies) {
-            // Count genre occurrences
             for (const genre of movie.genres) {
                 genreCount[genre] = (genreCount[genre] || 0) + 1;
             }
-
-            // Accumulate runtime and rating
             totalRuntime += movie.runtime;
             totalRating += movie.rating;
         }
