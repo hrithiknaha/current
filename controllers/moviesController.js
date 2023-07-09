@@ -30,7 +30,16 @@ const movieController = {
     readMovies: async (req, res, next) => {
         try {
             logEvents(`Searching all resources for user ${req.user}`, "appLog.log");
-            const movies = (await User.findOne({ username: req.user }).populate("movies").exec()).movies;
+            const user = await User.findOne({ username: req.user }).populate("movies").exec();
+
+            if (!user)
+                return res.status(404).json({
+                    success: false,
+                    status_message: "No user found. Request Unauthorized.",
+                    data: [],
+                });
+
+            const movies = user.movies;
 
             if (movies.length == 0)
                 return res.status(404).json({

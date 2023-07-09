@@ -32,7 +32,7 @@ axios.defaults.headers.post["Content-Type"] = "application/json";
 
 app.use("/api/tmdb", tmdbRoute);
 app.use("/api/auth", usersRoute);
-app.use("/api/movies", moviesRoute);
+app.use("/api/movies", verifyJWT, moviesRoute);
 app.use("/api/stats", verifyJWT, statisticsRoute);
 app.use("/api/admin", adminRoute);
 
