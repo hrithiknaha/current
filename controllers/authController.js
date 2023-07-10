@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { logEvents } = require("../middlewares/logger");
 const User = require("../models/Users");
 
-const usersController = {
+const authController = {
     registerUser: async (req, res, next) => {
         try {
             logEvents(`Registrating new user ${req.body.username}`, "appLog.log");
@@ -58,24 +58,29 @@ const usersController = {
                     status_message: "Request Unauthorized",
                 });
 
-            const match = bcrypt.compare(password, foundUser.password);
-            if (!match)
-                return res.status(401).json({
-                    success: false,
-                    status_message: "Credentials doe not match. Request Unauthorized",
-                });
+            bcrypt
+                .compare(password, foundUser.password)
+                .then((match) => {
+                    if (match) {
+                        const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+                        const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
-            const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
-            const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+                        res.cookie("jwt", refreshToken, {
+                            httpOnly: true, //accessible only by web server
+                            secure: true, //https
+                            sameSite: "None", //cross-site cookie
+                            maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
+                        });
 
-            res.cookie("jwt", refreshToken, {
-                httpOnly: true, //accessible only by web server
-                secure: true, //https
-                sameSite: "None", //cross-site cookie
-                maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
-            });
-
-            res.status(200).json({ accessToken, expiresIn: 15 * 60 * 1000 });
+                        res.status(200).json({ accessToken, expiresIn: 15 * 60 * 1000 });
+                    } else {
+                        return res.status(401).json({
+                            success: false,
+                            status_message: "Credentials doe not match. Request Unauthorized",
+                        });
+                    }
+                })
+                .catch((err) => console.log(err));
         } catch (error) {
             next(error);
         }
@@ -133,4 +138,4 @@ const usersController = {
     },
 };
 
-module.exports = usersController;
+module.exports = authController;

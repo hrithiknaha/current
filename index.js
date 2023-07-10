@@ -12,7 +12,7 @@ const connectDB = require("./configs/db");
 const { logger } = require("./middlewares/logger");
 const verifyJWT = require("./middlewares/verifyJWT");
 const moviesRoute = require("./routes/moviesRoute");
-const usersRoute = require("./routes/usersRoute");
+const authRoute = require("./routes/authRoute");
 const statisticsRoute = require("./routes/statisticsRoute");
 const tmdbRoute = require("./routes/tmdbRoute");
 const adminRoute = require("./routes/adminRoute");
@@ -31,7 +31,7 @@ axios.defaults.headers.common["Authorization"] = "Bearer " + process.env.API_AUT
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 app.use("/api/tmdb", tmdbRoute);
-app.use("/api/auth", usersRoute);
+app.use("/api/auth", authRoute);
 app.use("/api/movies", verifyJWT, moviesRoute);
 app.use("/api/stats", verifyJWT, statisticsRoute);
 app.use("/api/admin", adminRoute);
