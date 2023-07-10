@@ -45,7 +45,13 @@ const usersController = {
                     data: {},
                 });
 
-            return res.status(200).json(movie);
+            const response = {
+                rating: movie[0].rating,
+                date_watched: movie[0].date_watched,
+                theatre: movie[0].theatre,
+            };
+
+            return res.status(200).json(response);
         } catch (error) {
             next(error);
         }
