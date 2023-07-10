@@ -16,6 +16,7 @@ const authRoute = require("./routes/authRoute");
 const statisticsRoute = require("./routes/statisticsRoute");
 const tmdbRoute = require("./routes/tmdbRoute");
 const adminRoute = require("./routes/adminRoute");
+const userRoute = require("./routes/usersRoute");
 
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -34,6 +35,7 @@ app.use("/api/tmdb", tmdbRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/movies", verifyJWT, moviesRoute);
 app.use("/api/stats", verifyJWT, statisticsRoute);
+app.use("/api/users", userRoute);
 app.use("/api/admin", adminRoute);
 
 app.use(errorHandler);

@@ -61,7 +61,7 @@ const movieController = {
 
             const response = await axios.get(`/movie/${movie_id}?append_to_response=credits`);
 
-            const { original_title, genres, runtime, credits } = response.data;
+            const { title, genres, runtime, credits } = response.data;
 
             const genreName = genres.map((genre) => genre.name);
 
@@ -87,7 +87,7 @@ const movieController = {
                     };
                 });
 
-            const movie = await Movie.create({ movie_id, title: original_title, theatre, rating, genres: genreName, date_watched, runtime, cast: topCast, crew: topCrew });
+            const movie = await Movie.create({ movie_id, title, theatre, rating, genres: genreName, date_watched, runtime, cast: topCast, crew: topCrew });
 
             await User.findOneAndUpdate({ username: req.user }, { $push: { movies: movie._id } });
 

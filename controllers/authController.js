@@ -28,10 +28,21 @@ const authController = {
             const hashedPassword = await bcrypt.hash(password, 10);
 
             await User.create({ firstname, lastname, username, password: hashedPassword });
+
+            const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+            const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+
+            res.cookie("jwt", refreshToken, {
+                httpOnly: true, //accessible only by web server
+                secure: true, //https
+                sameSite: "None", //cross-site cookie
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            });
+
             return res.status(201).json({
                 success: true,
                 status_message: "New user registered.",
-                data: { username },
+                data: { username, accessToken },
             });
         } catch (error) {
             next(error);
