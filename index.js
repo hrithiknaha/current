@@ -35,7 +35,7 @@ app.use("/api/tmdb", tmdbRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/movies", verifyJWT, moviesRoute);
 app.use("/api/stats", verifyJWT, statisticsRoute);
-app.use("/api/users", userRoute);
+app.use("/api/users", verifyJWT, userRoute);
 app.use("/api/admin", adminRoute);
 
 app.use(errorHandler);
