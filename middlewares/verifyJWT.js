@@ -16,6 +16,8 @@ const verifyJWT = (req, res, next) => {
         req.user = decoded.username;
         next();
     } catch (error) {
+        console.log("Caught error");
+        res.statusCode = 401;
         next(error);
     }
 };

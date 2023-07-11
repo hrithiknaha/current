@@ -29,7 +29,7 @@ const authController = {
 
             await User.create({ firstname, lastname, username, password: hashedPassword });
 
-            const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+            const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
             const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
             res.cookie("jwt", refreshToken, {
@@ -73,7 +73,7 @@ const authController = {
                 .compare(password, foundUser.password)
                 .then((match) => {
                     if (match) {
-                        const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+                        const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
                         const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
                         res.cookie("jwt", refreshToken, {
@@ -103,7 +103,7 @@ const authController = {
 
             const refreshToken = req.cookies.jwt;
 
-            if (!cookies?.jwt)
+            if (!req.cookies?.jwt)
                 return res.status(401).json({
                     success: false,
                     status_message: "Cookie does not have the required token. Request Unauthorized.",
@@ -119,9 +119,9 @@ const authController = {
                     status_message: "No match found. Request Unauthorized.",
                 });
 
-            const accessToken = jwt.sign({ username: decoded.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+            const accessToken = jwt.sign({ username: decoded.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
 
-            res.json({ accessToken, expiresIn: 15 * 60 * 1000 });
+            res.json({ accessToken, expiresIn: 1 * 60 * 1000 });
         } catch (error) {
             next(error);
         }
