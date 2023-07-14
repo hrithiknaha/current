@@ -25,7 +25,6 @@ const adminController = {
                 };
 
                 const finalResponse = await axios.post("localhost:5001/api/movies/add", payload);
-                console.log("Git test");
             })
             .on("end", () => {
                 // Process the parsed CSV data
