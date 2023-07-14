@@ -17,6 +17,7 @@ const statisticsRoute = require("./routes/statisticsRoute");
 const tmdbRoute = require("./routes/tmdbRoute");
 const adminRoute = require("./routes/adminRoute");
 const userRoute = require("./routes/usersRoute");
+const seriesRoute = require("./routes/seriesRoute");
 
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -34,6 +35,7 @@ axios.defaults.headers.post["Content-Type"] = "application/json";
 app.use("/api/tmdb", tmdbRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/movies", verifyJWT, moviesRoute);
+app.use("/api/series", verifyJWT, seriesRoute);
 app.use("/api/stats", verifyJWT, statisticsRoute);
 app.use("/api/users", verifyJWT, userRoute);
 app.use("/api/admin", adminRoute);

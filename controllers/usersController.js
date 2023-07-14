@@ -7,7 +7,7 @@ const usersController = {
         try {
             logEvents(`Fetching user ${req.params.username} details`, "appLog.log");
 
-            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies").lean();
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies").populate("series").lean();
 
             if (!user)
                 return res.status(404).json({

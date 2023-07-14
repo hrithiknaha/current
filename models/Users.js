@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema(
         username: { type: String, required: true },
         password: { type: String, required: true },
         movies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
+        series: [{ type: mongoose.Schema.Types.ObjectId, ref: "Series" }],
     },
     { timeseries: true, timestamps: true }
 );
