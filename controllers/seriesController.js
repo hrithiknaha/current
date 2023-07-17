@@ -193,6 +193,7 @@ const seriesController = {
 
             const watchedEpisode = await Episode.create({
                 episode_id: id,
+                series_id,
                 name,
                 season_number,
                 episode_number,

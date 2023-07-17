@@ -12,6 +12,7 @@ const episodeSchema = new mongoose.Schema(
         cast: { type: [Object], required: true },
         crew: { type: [Object], required: true },
         guest_starts: { type: [Object], required: true },
+        series_id: { type: Number, required: true },
     },
     { timeseries: true, timestamps: true }
 );

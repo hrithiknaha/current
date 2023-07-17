@@ -80,9 +80,14 @@ const tmdbController = {
 
     getSeriesSeasonDetails: async (req, res, next) => {
         try {
-            logEvents(`Fetching resource ${req.params.seriesId} seasond ${req.params.seasonNumber} details from TMDB`, "appLog.log");
+            logEvents(
+                `Fetching resource ${req.params.seriesId} seasond ${req.params.seasonNumber} details from TMDB`,
+                "appLog.log"
+            );
 
-            const response = await axios.get(`/tv/${req.params.seriesId}/season/${req.params.seasonNumber}?append_to_response=credits`);
+            const response = await axios.get(
+                `/tv/${req.params.seriesId}/season/${req.params.seasonNumber}?append_to_response=credits`
+            );
 
             if (!response?.data)
                 return res.status(404).json({
@@ -99,9 +104,14 @@ const tmdbController = {
 
     getSeriesEpisodesDetails: async (req, res, next) => {
         try {
-            logEvents(`Fetching resource ${req.params.seriesId} season ${req.params.seasonNumber} episode ${req.params.episodeNumber} details from TMDB`, "appLog.log");
+            logEvents(
+                `Fetching resource ${req.params.seriesId} season ${req.params.seasonNumber} episode ${req.params.episodeNumber} details from TMDB`,
+                "appLog.log"
+            );
 
-            const response = await axios.get(`/tv/${req.params.seriesId}/season/${req.params.seasonNumber}/episode/${req.params.episodeNumber}?append_to_response=credits`);
+            const response = await axios.get(
+                `/tv/${req.params.seriesId}/season/${req.params.seasonNumber}/episode/${req.params.episodeNumber}?append_to_response=credits`
+            );
 
             if (!response?.data)
                 return res.status(404).json({
