@@ -125,6 +125,8 @@ const seriesController = {
 
             const { rating, date_watched, series_id, season_number, episode_number } = req.body;
 
+            console.log(typeof series_id);
+
             const response = await axios.get(
                 `/tv/${series_id}/season/${season_number}/episode/${episode_number}?append_to_response=credits`
             );
@@ -168,7 +170,7 @@ const seriesController = {
 
             const allSeries = user.series;
 
-            const relevant_series = allSeries.filter((s) => s.series_id === series_id)[0];
+            const relevant_series = allSeries.filter((s) => s.series_id === parseInt(series_id))[0];
 
             if (!relevant_series)
                 return res.status(404).json({
