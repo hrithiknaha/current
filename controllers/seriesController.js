@@ -20,8 +20,6 @@ const seriesController = {
 
             const series = user.series;
 
-            if (series.length === 0) return res.status(409).json({ success: true, status_message: "No series found." });
-
             const duplicateSeries = series.filter((s) => s.series_id === series_id);
 
             if (duplicateSeries.length != 0)
@@ -125,8 +123,6 @@ const seriesController = {
 
             const { rating, date_watched, series_id, season_number, episode_number } = req.body;
 
-            console.log(typeof series_id);
-
             const response = await axios.get(
                 `/tv/${series_id}/season/${season_number}/episode/${episode_number}?append_to_response=credits`
             );
@@ -143,13 +139,17 @@ const seriesController = {
                 };
             });
 
-            const topCrew = crew.filter(
-                (c) =>
-                    c.job === "Director" ||
-                    c.job === "Producer" ||
-                    c.job === "Screenplay" ||
-                    c.job === "Director of Photography"
-            );
+            const topCrew = crew
+                .filter(
+                    (c) =>
+                        c.job === "Director" ||
+                        c.job === "Producer" ||
+                        c.job === "Screenplay" ||
+                        c.job === "Director of Photography"
+                )
+                .map((c) => {
+                    return { id: c.id, job: c.job, name: c.name };
+                });
 
             const topGuestStar = guest_stars.map((g) => {
                 return {
@@ -245,7 +245,7 @@ const seriesController = {
             const episode = series.episodes.filter((e) => e.episode_id === parseInt(req.params.episodeId))[0];
 
             if (!episode)
-                return res.status(200).json({
+                return res.status(404).json({
                     success: false,
                     status_message: "No resource found for the given episode id.",
                 });
@@ -255,6 +255,38 @@ const seriesController = {
             next(error);
         }
         logEvents(`Fetching episode watched by user ${req.user}`, "appLog.log");
+    },
+
+    showWatchedEpisodeOfSeason: async (req, res, next) => {
+        try {
+            logEvents(`Fetching all watched episodes for resource ${req.params.seriesId}`, "appLog.log");
+
+            const user = await User.findOne({ username: req.user }).populate({
+                path: "series",
+                populate: {
+                    path: "episodes",
+                },
+            });
+
+            if (!user)
+                return res.status(200).json({
+                    success: false,
+                    status_message: "No user found for the token.",
+                });
+
+            const series = user.series.filter((s) => s.series_id === parseInt(req.params.seriesId))[0];
+
+            if (!series)
+                return res.status(200).json({
+                    success: false,
+                    status_message: "No resource found for the given series id.",
+                });
+            const episodes = series.episodes.filter((e) => e.season_number === parseInt(req.params.seasonNumber));
+
+            res.status(200).json(episodes);
+        } catch (error) {
+            next(error);
+        }
     },
 
     showAllWatchedEpisode: async (req, res, next) => {
