@@ -236,11 +236,7 @@ const seriesController = {
 
             const series = user.series.filter((s) => s.series_id === parseInt(req.params.seriesId))[0];
 
-            if (!series)
-                return res.status(200).json({
-                    success: false,
-                    status_message: "No resource found for the given series id.",
-                });
+            if (!series) return res.status(200).json({});
 
             const episode = series.episodes.filter((e) => e.episode_id === parseInt(req.params.episodeId))[0];
 
@@ -276,11 +272,7 @@ const seriesController = {
 
             const series = user.series.filter((s) => s.series_id === parseInt(req.params.seriesId))[0];
 
-            if (!series)
-                return res.status(200).json({
-                    success: false,
-                    status_message: "No resource found for the given series id.",
-                });
+            if (!series) return res.status(200).json([]);
             const episodes = series.episodes.filter((e) => e.season_number === parseInt(req.params.seasonNumber));
 
             res.status(200).json(episodes);
@@ -308,11 +300,7 @@ const seriesController = {
 
             const series = user.series.filter((s) => s.series_id === parseInt(req.params.seriesId))[0];
 
-            if (!series)
-                return res.status(200).json({
-                    success: false,
-                    status_message: "No resource found for the given series id.",
-                });
+            if (!series) return res.status(200).json([]);
             const episodes = series.episodes;
 
             res.status(200).json(episodes);
