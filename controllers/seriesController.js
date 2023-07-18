@@ -20,7 +20,7 @@ const seriesController = {
 
             const series = user.series;
 
-            const duplicateSeries = series.filter((s) => s.series_id === series_id);
+            const duplicateSeries = series.filter((s) => s.series_id === parseInt(series_id));
 
             if (duplicateSeries.length != 0)
                 return res.status(409).json({ success: true, status_message: "Series already has been added." });
@@ -71,11 +71,7 @@ const seriesController = {
 
             const series = user.series.filter((s) => s.series_id === parseInt(req.params.seriesId))[0];
 
-            if (!series)
-                return res.status(200).json({
-                    success: true,
-                    status_message: "No series found for the given seriesId.",
-                });
+            if (!series) return res.status(200).json({});
 
             res.status(200).json(series);
         } catch (error) {
