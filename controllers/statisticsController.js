@@ -3,6 +3,72 @@ const User = require("../models/Users");
 const { logEvents } = require("../middlewares/logger");
 
 const statisticsController = {
+    totalStats: async (req, res, next) => {
+        try {
+            logEvents(`Fetching stats of movies for user ${req.user}`, "appLog.log");
+
+            const user = await User.findOne({ username: req.user })
+                .populate("movies")
+                .populate({
+                    path: "series",
+                    populate: { path: "episodes" },
+                });
+
+            const movies = user?.movies;
+            const series = user?.series;
+
+            let movieGenreCount = {};
+            let totalMovieRuntime = 0;
+            let totalMovieRating = 0;
+            let totalMovies = movies.length;
+            let avgMovieRating = 0;
+
+            for (const movie of movies) {
+                for (const genre of movie.genres) {
+                    movieGenreCount[genre] = (movieGenreCount[genre] || 0) + 1;
+                }
+                totalMovieRuntime += movie.runtime;
+                totalMovieRating += movie.rating;
+            }
+            avgMovieRating = totalMovieRating / totalMovies;
+
+            let seriesGenreCount = {};
+            let totalSeries = series.length;
+            let totalEpisodes = 0;
+            let totalEpisodeRuntime = 0;
+            let avgEpisodeRating = 0;
+            let totalEpisodeRating = 0;
+
+            for (const serie of series) {
+                for (const genre of serie.genres) {
+                    seriesGenreCount[genre] = (seriesGenreCount[genre] || 0) + 1;
+                }
+                for (const episode of serie.episodes) {
+                    totalEpisodeRuntime += episode.runtime;
+                    totalEpisodeRating += episode.rating;
+                }
+                totalEpisodes += serie.episodes.length;
+            }
+
+            avgEpisodeRating = totalEpisodeRating / totalEpisodes;
+
+            res.status(200).json({
+                movieGenreCount,
+                totalMovieRating,
+                totalMovieRuntime,
+                totalMovies,
+                avgMovieRating,
+                seriesGenreCount,
+                totalSeries,
+                totalEpisodes,
+                totalEpisodeRuntime,
+                totalEpisodeRating,
+                avgEpisodeRating,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
     totalMovieStats: async (req, res, next) => {
         try {
             logEvents(`Fetching stats of movies for user ${req.user}`, "appLog.log");
