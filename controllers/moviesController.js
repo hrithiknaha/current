@@ -78,7 +78,13 @@ const movieController = {
 
             const crews = credits.crew;
             const topCrew = crews
-                .filter((crew) => crew.job === "Director" || crew.job === "Director of Photography" || crew.job === "Screenplay" || crew.job === "Story")
+                .filter(
+                    (crew) =>
+                        crew.job === "Director" ||
+                        crew.job === "Director of Photography" ||
+                        crew.job === "Screenplay" ||
+                        crew.job === "Story"
+                )
                 .map((c) => {
                     return {
                         id: c.id,
@@ -87,9 +93,29 @@ const movieController = {
                     };
                 });
 
-            const movie = await Movie.create({ movie_id, title, theatre, rating, genres: genreName, date_watched, runtime, cast: topCast, crew: topCrew });
+            const user = await User.findOne({ username: req.user }).populate("movies");
 
-            await User.findOneAndUpdate({ username: req.user }, { $push: { movies: movie._id } });
+            const movies = user.movies;
+
+            const dulicateMovie = movies.filter((movie) => movie.movie_id === parseInt(movie_id));
+
+            if (dulicateMovie.length != 0)
+                return res.status(409).json({ success: true, status_message: "Movie already has been added." });
+
+            const movie = await Movie.create({
+                movie_id,
+                title,
+                theatre,
+                rating,
+                genres: genreName,
+                date_watched,
+                runtime,
+                cast: topCast,
+                crew: topCrew,
+            });
+
+            user.movies.push(movie._id);
+            user.save();
 
             return res.status(201).json({
                 success: true,
