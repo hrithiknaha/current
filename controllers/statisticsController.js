@@ -17,31 +17,45 @@ const statisticsController = {
             const movies = user?.movies;
             const series = user?.series;
 
-            let movieGenreCount = {};
+            let movieGenreDataset = [];
             let totalMovieRuntime = 0;
             let totalMovieRating = 0;
             let totalMovies = movies.length;
             let avgMovieRating = 0;
 
+            const movieGenreMap = new Map();
             for (const movie of movies) {
                 for (const genre of movie.genres) {
-                    movieGenreCount[genre] = (movieGenreCount[genre] || 0) + 1;
+                    if (movieGenreMap.has(genre)) {
+                        movieGenreMap.set(genre, movieGenreMap.get(genre) + 1);
+                    } else {
+                        movieGenreMap.set(genre, 1);
+                    }
                 }
                 totalMovieRuntime += movie.runtime;
                 totalMovieRating += movie.rating;
             }
+
+            for (const [genre, count] of movieGenreMap) {
+                movieGenreDataset.push({ name: genre, count });
+            }
             avgMovieRating = totalMovieRating / totalMovies;
 
-            let seriesGenreCount = {};
+            let seriesGenreDataset = [];
             let totalSeries = series.length;
             let totalEpisodes = 0;
             let totalEpisodeRuntime = 0;
             let avgEpisodeRating = 0;
             let totalEpisodeRating = 0;
 
+            const seriesGenreMap = new Map();
             for (const serie of series) {
                 for (const genre of serie.genres) {
-                    seriesGenreCount[genre] = (seriesGenreCount[genre] || 0) + 1;
+                    if (seriesGenreMap.has(genre)) {
+                        seriesGenreMap.set(genre, seriesGenreMap.get(genre) + 1);
+                    } else {
+                        seriesGenreMap.set(genre, 1);
+                    }
                 }
                 for (const episode of serie.episodes) {
                     totalEpisodeRuntime += episode.runtime;
@@ -50,15 +64,18 @@ const statisticsController = {
                 totalEpisodes += serie.episodes.length;
             }
 
+            for (const [genre, count] of seriesGenreMap) {
+                seriesGenreDataset.push({ name: genre, count });
+            }
             avgEpisodeRating = totalEpisodeRating / totalEpisodes;
 
             res.status(200).json({
-                movieGenreCount,
+                movieGenreDataset,
                 totalMovieRating,
                 totalMovieRuntime,
                 totalMovies,
                 avgMovieRating,
-                seriesGenreCount,
+                seriesGenreDataset,
                 totalSeries,
                 totalEpisodes,
                 totalEpisodeRuntime,
