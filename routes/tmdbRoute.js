@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 const tmdbController = require("../controllers/tmdbController");
 
+router.get("/person/:personId", tmdbController.getPersonDetails);
 router.post("/movies/search", tmdbController.searchMovie);
 router.get("/movies/:movieId", tmdbController.getMovieDetails);
 router.post("/series/search", tmdbController.searchSeries);

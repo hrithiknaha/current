@@ -112,6 +112,20 @@ const tmdbController = {
             next(error);
         }
     },
+
+    getPersonDetails: async (req, res, next) => {
+        try {
+            logEvents(`Fetching resrouce ${req.params.personId} details from TMDB`, "appLog.log");
+
+            const response = await axios.get(`/person/${req.params.personId}?append_to_response=combined_credits`);
+
+            return res.status(200).json(response.data);
+        } catch (error) {
+            error.message = "The resource you requested could not be found at TMDB";
+            res.status(404);
+            next(error);
+        }
+    },
 };
 
 module.exports = tmdbController;
