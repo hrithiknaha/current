@@ -145,6 +145,8 @@ const statisticsController = {
             let totalRatingMovie = 0;
             let totalMovies = movies.length;
 
+            console.log("Test");
+
             const genreMovieMap = new Map();
             const languageMovieMap = new Map();
             const productionCountriesMovieMap = new Map();
