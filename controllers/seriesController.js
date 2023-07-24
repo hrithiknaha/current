@@ -14,7 +14,19 @@ const seriesController = {
 
             const response = await axios.get(`/tv/${series_id}?append_to_response=credits`);
 
-            const { name, genres, number_of_episodes, number_of_seasons, status } = response.data;
+            const {
+                name,
+                genres,
+                number_of_episodes,
+                number_of_seasons,
+                status,
+                first_air_date,
+                spoken_languages,
+                networks,
+                origin_country,
+                production_companies,
+                production_countries,
+            } = response.data;
 
             const user = await User.findOne({ username: req.user }).populate("series");
 
@@ -34,6 +46,12 @@ const seriesController = {
                 number_of_episodes,
                 number_of_seasons,
                 status,
+                first_air_date,
+                spoken_languages,
+                networks,
+                origin_country,
+                production_companies,
+                production_countries,
             });
 
             user.series.push(tv._id);
@@ -198,8 +216,8 @@ const seriesController = {
                 runtime,
                 rating,
                 date_watched,
-                cast: topCast,
-                crew: topCrew,
+                casts: topCast,
+                crews: topCrew,
                 guest_starts: topGuestStar,
             });
 

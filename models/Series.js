@@ -9,6 +9,12 @@ const seriesSchema = new mongoose.Schema(
         number_of_episodes: { type: Number, required: true },
         status: { type: String, required: true },
         episodes: [{ type: mongoose.Schema.Types.ObjectId, ref: "Episode" }],
+        first_air_date: { type: String, required: true },
+        spoken_languages: { type: [Object], required: true },
+        networks: { type: [Object], required: true },
+        origin_country: { type: [Object], required: true },
+        production_companies: { type: [Object], required: true },
+        production_countries: { type: [Object], required: true },
     },
     { timeseries: true, timestamps: true }
 );
