@@ -36,7 +36,6 @@ const movieController = {
                 return res.status(404).json({
                     success: false,
                     status_message: "No user found. Request Unauthorized.",
-                    data: [],
                 });
 
             const movies = user.movies;
@@ -45,7 +44,6 @@ const movieController = {
                 return res.status(404).json({
                     success: false,
                     status_message: "The resources you requested could not be found.",
-                    data: [],
                 });
 
             return res.status(200).json(movies);
