@@ -102,7 +102,6 @@ const statisticsController = {
             let directorDataset = [];
             let totalRuntime = 0;
             let totalRating = 0;
-            let releaseYear = [];
             let totalMovies = movies.length;
 
             const genreMap = new Map();
@@ -143,7 +142,6 @@ const statisticsController = {
                 }
 
                 for (const crew of movie.crews.filter((c) => c.job === "Director")) {
-                    console.log(crew);
                     if (directorMap.has(crew.name)) directorMap.set(crew.name, directorMap.get(crew.name) + 1);
                     else directorMap.set(crew.name, 1);
                 }
@@ -157,7 +155,6 @@ const statisticsController = {
 
                 totalRuntime += movie.runtime;
                 totalRating += movie.rating;
-                releaseYear.push(moment(movie.release_date).year());
             }
 
             for (const [year, count] of releaseYearMap) {
@@ -166,6 +163,7 @@ const statisticsController = {
                     count,
                 });
             }
+
             for (const [country, count] of productionCountriesMap) {
                 productionCountriesDataset.push({ name: country, count });
             }
