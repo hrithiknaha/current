@@ -6,4 +6,4 @@ const searchAppender = (queryString) => {
     return query;
 };
 
-module.exports = searchAppender;
+module.exports = { searchAppender };

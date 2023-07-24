@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const { logEvents } = require("../middlewares/logger");
-const searchAppender = require("../helpers/searchLodash");
+const { searchAppender } = require("../helpers/utils");
 
 const tmdbController = {
     searchMovie: async (req, res, next) => {

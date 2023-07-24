@@ -61,7 +61,16 @@ const movieController = {
 
             const response = await axios.get(`/movie/${movie_id}?append_to_response=credits`);
 
-            const { title, genres, runtime, credits } = response.data;
+            const {
+                title,
+                genres,
+                runtime,
+                credits,
+                production_countries,
+                spoken_languages,
+                release_date,
+                production_companies,
+            } = response.data;
 
             const genreName = genres.map((genre) => genre.name);
 
@@ -83,7 +92,8 @@ const movieController = {
                         crew.job === "Director" ||
                         crew.job === "Director of Photography" ||
                         crew.job === "Screenplay" ||
-                        crew.job === "Story"
+                        crew.job === "Story" ||
+                        crew.job === "Original Music Composer"
                 )
                 .map((c) => {
                     return {
@@ -110,8 +120,12 @@ const movieController = {
                 genres: genreName,
                 date_watched,
                 runtime,
-                cast: topCast,
-                crew: topCrew,
+                release_date,
+                production_companies,
+                spoken_languages,
+                production_countries,
+                casts: topCast,
+                crews: topCrew,
             });
 
             user.movies.push(movie._id);
