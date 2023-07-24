@@ -102,9 +102,9 @@ const seriesController = {
             const series = user.series;
 
             if (series.length === 0)
-                return res.status(200).json({
+                return res.status(404).json({
                     success: true,
-                    status_message: "No series found for the given seriesId.",
+                    status_message: "No series found..",
                 });
 
             res.status(200).json(series);
