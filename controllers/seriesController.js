@@ -26,6 +26,7 @@ const seriesController = {
                 origin_country,
                 production_companies,
                 production_countries,
+                episode_run_time,
             } = response.data;
 
             const user = await User.findOne({ username: req.user }).populate("series");
@@ -41,6 +42,7 @@ const seriesController = {
 
             const tv = await Series.create({
                 series_id,
+                episode_run_time: episode_run_time[0],
                 name,
                 genres: genreName,
                 number_of_episodes,

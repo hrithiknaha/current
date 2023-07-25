@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const seriesSchema = new mongoose.Schema(
     {
         name: { type: String, required: true },
+        episode_run_time: { type: Number, required: true },
         series_id: { type: Number, required: true },
         genres: { type: Array, required: true },
         number_of_seasons: { type: Number, required: true },
