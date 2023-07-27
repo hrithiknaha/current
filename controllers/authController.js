@@ -73,8 +73,12 @@ const authController = {
                 .compare(password, foundUser.password)
                 .then((match) => {
                     if (match) {
-                        const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
-                        const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+                        const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, {
+                            expiresIn: "1d",
+                        });
+                        const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, {
+                            expiresIn: "7d",
+                        });
 
                         res.cookie("jwt", refreshToken, {
                             httpOnly: true, //accessible only by web server
@@ -87,7 +91,7 @@ const authController = {
                     } else {
                         return res.status(401).json({
                             success: false,
-                            status_message: "Credentials doe not match. Request Unauthorized",
+                            status_message: "Credentials does not match. Request Unauthorized",
                         });
                     }
                 })
@@ -119,7 +123,9 @@ const authController = {
                     status_message: "No match found. Request Unauthorized.",
                 });
 
-            const accessToken = jwt.sign({ username: decoded.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
+            const accessToken = jwt.sign({ username: decoded.username }, process.env.ACCESS_TOKEN_SECRET, {
+                expiresIn: "1d",
+            });
 
             res.json({ accessToken, expiresIn: 1 * 60 * 1000 });
         } catch (error) {
