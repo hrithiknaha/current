@@ -99,37 +99,27 @@ const statisticsController = {
                 totalEpisode += serie.episodes.length;
             }
 
-            for (const [genre, count] of genreSeriesMap) {
-                genreSeriesDataset.push({ name: genre, count });
-            }
+            genreSeriesDataset = Array.from(genreSeriesMap, ([name, count]) => ({ name, count }));
+            releaseYearSeriesDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, count })).sort(
+                (a, b) => (a.name > b.name ? 1 : -1)
+            );
+            languageSeriesDataset = Array.from(languageSeriesMap, ([name, count]) => ({ name, count }));
 
-            for (const [year, count] of releaseYearSeriesMap) {
-                releaseYearSeriesDataset.push({ name: year, count });
-            }
+            networkSeriesDataset = Array.from(networkSeriesMap, ([name, count]) => ({ name, count }));
 
-            for (const [language, count] of languageSeriesMap) {
-                languageSeriesDataset.push({ name: language, count });
-            }
+            originCountrySeriesDataset = Array.from(originCountrySeriesMap, ([name, count]) => ({ name, count }));
 
-            for (const [network, count] of networkSeriesMap) {
-                networkSeriesDataset.push({ name: network, count });
-            }
+            productionCountriesSeriesDataset = Array.from(productionCountriesSeriesMap, ([name, count]) => ({
+                name,
+                count,
+            }));
 
-            for (const [country, count] of originCountrySeriesMap) {
-                originCountrySeriesDataset.push({ name: country, count });
-            }
+            productionCompaniesSeriesDataset = Array.from(productionCompaniesSeriesMap, ([name, count]) => ({
+                name,
+                count,
+            }));
 
-            for (const [country, count] of productionCountriesSeriesMap) {
-                productionCountriesSeriesDataset.push({ name: country, count });
-            }
-
-            for (const [company, count] of productionCompaniesSeriesMap) {
-                productionCompaniesSeriesDataset.push({ name: company, count });
-            }
-
-            for (const [status, count] of statusSeriesMap) {
-                statusSeriesDataset.push({ name: status, count });
-            }
+            statusSeriesDataset = Array.from(statusSeriesMap, ([name, count]) => ({ name, count }));
 
             const avgRatingSeries = totalWatchedRating / totalEpisode;
 
@@ -200,33 +190,27 @@ const statisticsController = {
                 totalRatingMovie += movie.rating;
             }
 
-            for (const [genre, count] of genreMovieMap) {
-                genreMovieDataset.push({ name: genre, count });
-            }
+            genreMovieDataset = Array.from(genreMovieMap, ([name, count]) => ({ name, count }));
 
-            for (const [year, count] of releaseYearMovieMap) {
-                releaseYearMovieDataset.push({ name: year, count });
-            }
+            releaseYearMovieDataset = Array.from(releaseYearMovieMap, ([name, count]) => ({ name, count })).sort(
+                (a, b) => (a.name > b.name ? 1 : -1)
+            );
 
-            for (const [language, count] of languageMovieMap) {
-                languageMovieDataset.push({ name: language, count });
-            }
+            languageMovieDataset = Array.from(languageMovieMap, ([name, count]) => ({ name, count }));
 
-            for (const [country, count] of productionCountriesMovieMap) {
-                productionCountriesMovieDataset.push({ name: country, count });
-            }
+            productionCountriesMovieDataset = Array.from(productionCountriesMovieMap, ([name, count]) => ({
+                name,
+                count,
+            }));
 
-            for (const [company, count] of productionCompaniesMovieMap) {
-                productionCompaniesMovieDataset.push({ name: company, count });
-            }
+            productionCompaniesMovieDataset = Array.from(productionCompaniesMovieMap, ([name, count]) => ({
+                name,
+                count,
+            }));
 
-            for (const [cast, count] of castMovieMap) {
-                castMovieDataset.push({ name: cast, count });
-            }
+            castMovieDataset = Array.from(castMovieMap, ([name, count]) => ({ name, count }));
 
-            for (const [crew, count] of directorMovieMap) {
-                directorMovieDataset.push({ name: crew, count });
-            }
+            directorMovieDataset = Array.from(directorMovieMap, ([name, count]) => ({ name, count }));
 
             const avgRatingMovie = totalRatingMovie / totalMovies;
 
@@ -328,7 +312,9 @@ const statisticsController = {
             const languageDataset = Array.from(languageMap, ([name, count]) => ({ name, count }));
             const productionCountriesDataset = Array.from(productionCountriesMap, ([name, count]) => ({ name, count }));
             const productionCompaniesDataset = Array.from(productionCompaniesMap, ([name, count]) => ({ name, count }));
-            const releaseYearDataset = Array.from(releaseYearMap, ([name, count]) => ({ name, count }));
+            const releaseYearDataset = Array.from(releaseYearMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.name > b.name ? 1 : -1
+            );
             const castDataset = Array.from(castMap, ([name, count]) => ({ name, count }));
             const directorDataset = Array.from(directorMap, ([name, count]) => ({ name, count }));
 
@@ -379,6 +365,7 @@ const statisticsController = {
             const productionCompaniesMap = new Map();
             const productionCountriesMap = new Map();
             const statusMap = new Map();
+            const releaseYearSeriesMap = new Map();
 
             for (const serie of series) {
                 serie.genres.forEach((genre) => {
@@ -411,7 +398,12 @@ const statisticsController = {
                 });
 
                 totalEpisode += serie.episodes.length;
+
                 statusMap.set(serie.status, (statusMap.get(serie.status) || 0) + 1);
+                releaseYearSeriesMap.set(
+                    moment(serie.first_air_date).year(),
+                    (releaseYearSeriesMap.has(moment(serie.first_air_date).year()) || 0) + 1
+                );
             }
 
             const genreDataset = Array.from(genreMap, ([name, count]) => ({ name, count }));
@@ -421,6 +413,9 @@ const statisticsController = {
             const productionCompaniesDataset = Array.from(productionCompaniesMap, ([name, count]) => ({ name, count }));
             const productionCountriesDataset = Array.from(productionCountriesMap, ([name, count]) => ({ name, count }));
             const statusDataset = Array.from(statusMap, ([name, count]) => ({ name, count }));
+            const releaseYearDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, count })).sort(
+                (a, b) => (a.name > b.name ? 1 : -1)
+            );
 
             const avgRating = totalWatchedRating / totalEpisode;
 
@@ -436,6 +431,7 @@ const statisticsController = {
                 productionCompaniesDataset,
                 productionCountriesDataset,
                 statusDataset,
+                releaseYearDataset,
             });
         } catch (error) {
             next(error);
