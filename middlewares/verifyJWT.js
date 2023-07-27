@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/Users");
 
-const verifyJWT = (req, res, next) => {
+const verifyJWT = async (req, res, next) => {
     try {
         const authHeader = req.headers.Authorization || req.headers.authorization;
 
@@ -14,9 +15,12 @@ const verifyJWT = (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         req.user = decoded.username;
-        next();
+
+        const user = await User.findOne({ username: decoded.username }).lean();
+
+        if (user) next();
+        else throw new Error("User not registered.");
     } catch (error) {
-        console.log("Caught error");
         res.statusCode = 401;
         next(error);
     }

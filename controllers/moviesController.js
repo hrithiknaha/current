@@ -103,6 +103,8 @@ const movieController = {
 
             const user = await User.findOne({ username: req.user }).populate("movies");
 
+            if (!user) return res.status(200).json({ success: true, status_message: "No User." });
+
             const movies = user.movies;
 
             const dulicateMovie = movies.filter((movie) => movie.movie_id === parseInt(movie_id));
