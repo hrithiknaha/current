@@ -99,27 +99,37 @@ const statisticsController = {
                 totalEpisode += serie.episodes.length;
             }
 
-            genreSeriesDataset = Array.from(genreSeriesMap, ([name, count]) => ({ name, count }));
+            genreSeriesDataset = Array.from(genreSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
             releaseYearSeriesDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, count })).sort(
                 (a, b) => (a.name > b.name ? 1 : -1)
             );
-            languageSeriesDataset = Array.from(languageSeriesMap, ([name, count]) => ({ name, count }));
+            languageSeriesDataset = Array.from(languageSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
 
-            networkSeriesDataset = Array.from(networkSeriesMap, ([name, count]) => ({ name, count }));
+            networkSeriesDataset = Array.from(networkSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
 
-            originCountrySeriesDataset = Array.from(originCountrySeriesMap, ([name, count]) => ({ name, count }));
+            originCountrySeriesDataset = Array.from(originCountrySeriesMap, ([name, count]) => ({ name, count })).sort(
+                (a, b) => (a.count < b.count ? 1 : -1)
+            );
 
             productionCountriesSeriesDataset = Array.from(productionCountriesSeriesMap, ([name, count]) => ({
                 name,
                 count,
-            }));
+            })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
             productionCompaniesSeriesDataset = Array.from(productionCompaniesSeriesMap, ([name, count]) => ({
                 name,
                 count,
-            }));
+            })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
-            statusSeriesDataset = Array.from(statusSeriesMap, ([name, count]) => ({ name, count }));
+            statusSeriesDataset = Array.from(statusSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
 
             const avgRatingSeries = totalWatchedRating / totalEpisode;
 
@@ -134,8 +144,6 @@ const statisticsController = {
             let totalRuntimeMovie = 0;
             let totalRatingMovie = 0;
             let totalMovies = movies.length;
-
-            console.log("Test");
 
             const genreMovieMap = new Map();
             const languageMovieMap = new Map();
@@ -190,27 +198,35 @@ const statisticsController = {
                 totalRatingMovie += movie.rating;
             }
 
-            genreMovieDataset = Array.from(genreMovieMap, ([name, count]) => ({ name, count }));
+            genreMovieDataset = Array.from(genreMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
 
             releaseYearMovieDataset = Array.from(releaseYearMovieMap, ([name, count]) => ({ name, count })).sort(
                 (a, b) => (a.name > b.name ? 1 : -1)
             );
 
-            languageMovieDataset = Array.from(languageMovieMap, ([name, count]) => ({ name, count }));
+            languageMovieDataset = Array.from(languageMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
 
             productionCountriesMovieDataset = Array.from(productionCountriesMovieMap, ([name, count]) => ({
                 name,
                 count,
-            }));
+            })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
             productionCompaniesMovieDataset = Array.from(productionCompaniesMovieMap, ([name, count]) => ({
                 name,
                 count,
-            }));
+            })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
-            castMovieDataset = Array.from(castMovieMap, ([name, count]) => ({ name, count }));
+            castMovieDataset = Array.from(castMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
 
-            directorMovieDataset = Array.from(directorMovieMap, ([name, count]) => ({ name, count }));
+            directorMovieDataset = Array.from(directorMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
 
             const avgRatingMovie = totalRatingMovie / totalMovies;
 
