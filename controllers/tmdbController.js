@@ -126,6 +126,18 @@ const tmdbController = {
             next(error);
         }
     },
+
+    getTrending: async (req, res, next) => {
+        try {
+            logEvents(`Fetching all day trending details from TMDB`, "appLog.log");
+
+            const response = await axios.get(`trending/all/day`);
+
+            return res.status(200).json(response.data);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = tmdbController;
