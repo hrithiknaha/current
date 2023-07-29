@@ -35,6 +35,10 @@ const statisticsController = {
             let totalEpisode = 0;
             let totalWatchedRuntime = 0;
             let totalWatchedRating = 0;
+            let totalWatchedToday = 0;
+            let totalWatchedThisWeek = 0;
+            let totalWatchedThisMonth = 0;
+            let totalWatchedThisYear = 0;
 
             const genreSeriesMap = new Map();
             const releaseYearSeriesMap = new Map();
@@ -46,6 +50,15 @@ const statisticsController = {
             const statusSeriesMap = new Map();
 
             for (const serie of series) {
+                for (const episode of serie.episodes.filter((e) => moment(e.date_watched).year() === moment().year())) {
+                    const dateWatched = moment(episode.date_watched).format("YYYY-MM-DD");
+
+                    if (dateWatched === moment().format("YYYY-MM-DD")) totalWatchedToday++;
+                    if (moment(episode.date_watched).weekYear() === moment().weekYear()) totalWatchedThisWeek++;
+                    if (moment(episode.date_watched).month() === moment().month()) totalWatchedThisMonth++;
+                    if (moment(episode.date_watched).year() === moment().year()) totalWatchedThisYear++;
+                }
+
                 for (const genre of serie.genres) {
                     genreSeriesMap.set(genre, (genreSeriesMap.get(genre) || 0) + 1);
                 }
@@ -144,6 +157,10 @@ const statisticsController = {
             let totalRuntimeMovie = 0;
             let totalRatingMovie = 0;
             let totalMovies = movies.length;
+            let totalWatchedMoviesToday = 0;
+            let totalWatchedMoviesThisWeek = 0;
+            let totalWatchedMoviesThisMonth = 0;
+            let totalWatchedMoviesThisYear = 0;
 
             const genreMovieMap = new Map();
             const languageMovieMap = new Map();
@@ -152,6 +169,15 @@ const statisticsController = {
             const releaseYearMovieMap = new Map();
             const castMovieMap = new Map();
             const directorMovieMap = new Map();
+
+            for (const episode of movies.filter((e) => moment(e.date_watched).year() === moment().year())) {
+                const dateWatched = moment(episode.date_watched).format("YYYY-MM-DD");
+
+                if (dateWatched === moment().format("YYYY-MM-DD")) totalWatchedMoviesToday++;
+                if (moment(episode.date_watched).weekYear() === moment().weekYear()) totalWatchedMoviesThisWeek++;
+                if (moment(episode.date_watched).month() === moment().month()) totalWatchedMoviesThisMonth++;
+                if (moment(episode.date_watched).year() === moment().year()) totalWatchedMoviesThisYear++;
+            }
 
             for (const movie of movies) {
                 for (const genre of movie.genres) {
@@ -246,6 +272,10 @@ const statisticsController = {
                     productionCompaniesSeriesDataset,
                     productionCountriesSeriesDataset,
                     statusSeriesDataset,
+                    totalWatchedToday,
+                    totalWatchedThisWeek,
+                    totalWatchedThisMonth,
+                    totalWatchedThisYear,
                 },
                 movies: {
                     // Movies stats
@@ -259,6 +289,10 @@ const statisticsController = {
                     releaseYearMovieDataset,
                     castMovieDataset,
                     directorMovieDataset,
+                    totalWatchedMoviesToday,
+                    totalWatchedMoviesThisWeek,
+                    totalWatchedMoviesThisMonth,
+                    totalWatchedMoviesThisYear,
                 },
             });
         } catch (error) {
