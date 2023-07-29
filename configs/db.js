@@ -11,7 +11,7 @@ const connectDB = () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         })
-        .then(() => console.log("Db Connected :", process.env.NODE_ENV || "development"))
+        .then(() => console.log("Db Connected :", process.env.NODE_ENV))
         .catch((err) => console.log(`${err} could not connect`));
 };
 

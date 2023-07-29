@@ -20,7 +20,7 @@ const seriesRoute = require("./routes/seriesRoute");
 
 const errorHandler = require("./middlewares/errorHandler");
 
-console.log("Running on", process.env.NODE_ENV || "development");
+console.log("Running on", process.env.NODE_ENV);
 connectDB();
 app.use(logger);
 app.use(express.urlencoded({ extended: false }));
