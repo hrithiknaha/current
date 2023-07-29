@@ -55,7 +55,7 @@ const movieController = {
         try {
             logEvents(`Inserting resource ${req.body.movie_id} for user ${req.user}`, "appLog.log");
 
-            const { theatre, rating, movie_id, date_watched } = req.body;
+            const { rating, movie_id, date_watched } = req.body;
 
             const response = await axios.get(`/movie/${movie_id}?append_to_response=credits`);
 
@@ -115,7 +115,6 @@ const movieController = {
             const movie = await Movie.create({
                 movie_id,
                 title,
-                theatre,
                 rating,
                 genres: genreName,
                 date_watched,

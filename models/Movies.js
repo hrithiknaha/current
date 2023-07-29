@@ -6,7 +6,6 @@ const movieSchema = new mongoose.Schema(
         movie_id: { type: Number, required: true },
         genres: { type: Array, required: true },
         runtime: { type: Number, required: true },
-        theatre: { type: Boolean, required: true },
         rating: { type: Number, required: true },
         date_watched: { type: Date, required: true },
         release_date: { type: Date, required: true },
