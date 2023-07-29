@@ -51,9 +51,8 @@ const statisticsController = {
 
             for (const serie of series) {
                 for (const episode of serie.episodes.filter((e) => moment(e.date_watched).year() === moment().year())) {
-                    const dateWatched = moment(episode.date_watched).format("YYYY-MM-DD");
-
-                    if (dateWatched === moment().format("YYYY-MM-DD")) totalWatchedToday++;
+                    if (moment(episode.date_watched).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"))
+                        totalWatchedToday++;
                     if (moment(episode.date_watched).weekYear() === moment().weekYear()) totalWatchedThisWeek++;
                     if (moment(episode.date_watched).month() === moment().month()) totalWatchedThisMonth++;
                     if (moment(episode.date_watched).year() === moment().year()) totalWatchedThisYear++;
