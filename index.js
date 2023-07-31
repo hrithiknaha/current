@@ -32,6 +32,7 @@ axios.defaults.baseURL = "https://api.themoviedb.org/3";
 axios.defaults.headers.common["Authorization"] = "Bearer " + process.env.API_AUTH_TOKEN;
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
+app.use("/", (req, res) => res.send("Current"));
 app.use("/api/tmdb", tmdbRoute);
 app.use("/api/auth", authRoute);
 app.use("/api/movies", verifyJWT, moviesRoute);
