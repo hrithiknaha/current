@@ -40,6 +40,7 @@ const statisticsController = {
             let totalWatchedThisMonth = 0;
             let totalWatchedThisYear = 0;
             let lastTwentyWeekWatchedDataset = [];
+            let castEpisodeDataset = [];
 
             const genreSeriesMap = new Map();
             const releaseYearSeriesMap = new Map();
@@ -50,6 +51,7 @@ const statisticsController = {
             const productionCountriesSeriesMap = new Map();
             const statusSeriesMap = new Map();
             const twentyWeekMap = new Map();
+            const castSeriesMap = new Map();
 
             const twentyWeeksAgo = moment().subtract(20, "weeks");
 
@@ -107,6 +109,10 @@ const statisticsController = {
                 for (const episode of serie.episodes) {
                     totalWatchedRuntime += episode.runtime;
                     totalWatchedRating += episode.rating;
+
+                    for (const cast of episode.casts) {
+                        castSeriesMap.set(cast.character, (castSeriesMap.get(cast.character) || 0) + 1);
+                    }
                 }
 
                 if (releaseYearSeriesMap.has(moment(serie.first_air_date).year())) {
@@ -126,6 +132,10 @@ const statisticsController = {
 
                 totalEpisode += serie.episodes.length;
             }
+
+            castEpisodeDataset = Array.from(castSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
 
             lastTwentyWeekWatchedDataset = Array.from(twentyWeekMap, ([name, count]) => ({ name, count })).sort(
                 (a, b) => (a.name > b.name ? 1 : -1)
@@ -296,6 +306,7 @@ const statisticsController = {
                     totalWatchedThisMonth,
                     totalWatchedThisYear,
                     lastTwentyWeekWatchedDataset,
+                    castEpisodeDataset,
                 },
                 movies: {
                     // Movies stats
