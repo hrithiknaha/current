@@ -39,6 +39,7 @@ const statisticsController = {
             let totalWatchedThisWeek = 0;
             let totalWatchedThisMonth = 0;
             let totalWatchedThisYear = 0;
+            let lastTwentyWeekWatchedDataset = [];
 
             const genreSeriesMap = new Map();
             const releaseYearSeriesMap = new Map();
@@ -48,14 +49,29 @@ const statisticsController = {
             const productionCompaniesSeriesMap = new Map();
             const productionCountriesSeriesMap = new Map();
             const statusSeriesMap = new Map();
+            const twentyWeekMap = new Map();
+
+            const twentyWeeksAgo = moment().subtract(20, "weeks");
+
+            let currentWeek = moment().week();
+            for (let i = 0; i < 20; i++) {
+                twentyWeekMap.set(currentWeek, 0);
+                currentWeek = currentWeek === 1 ? 52 : currentWeek - 1;
+            }
 
             for (const serie of series) {
                 for (const episode of serie.episodes.filter((e) => moment(e.date_watched).year() === moment().year())) {
                     if (moment(episode.date_watched).format("YYYY-MM-DD") === moment().format("YYYY-MM-DD"))
                         totalWatchedToday++;
-                    if (moment(episode.date_watched).weekYear() === moment().weekYear()) totalWatchedThisWeek++;
+                    if (moment(episode.date_watched).week() === moment().week()) totalWatchedThisWeek++;
                     if (moment(episode.date_watched).month() === moment().month()) totalWatchedThisMonth++;
                     if (moment(episode.date_watched).year() === moment().year()) totalWatchedThisYear++;
+
+                    const weekNumber = moment(episode.date_watched).week();
+
+                    if (weekNumber >= twentyWeeksAgo.week()) {
+                        twentyWeekMap.set(weekNumber, (twentyWeekMap.get(weekNumber) || 0) + 1);
+                    }
                 }
 
                 for (const genre of serie.genres) {
@@ -110,6 +126,10 @@ const statisticsController = {
 
                 totalEpisode += serie.episodes.length;
             }
+
+            lastTwentyWeekWatchedDataset = Array.from(twentyWeekMap, ([name, count]) => ({ name, count })).sort(
+                (a, b) => (a.name > b.name ? 1 : -1)
+            );
 
             genreSeriesDataset = Array.from(genreSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
                 a.count < b.count ? 1 : -1
@@ -275,6 +295,7 @@ const statisticsController = {
                     totalWatchedThisWeek,
                     totalWatchedThisMonth,
                     totalWatchedThisYear,
+                    lastTwentyWeekWatchedDataset,
                 },
                 movies: {
                     // Movies stats
