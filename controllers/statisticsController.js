@@ -2,7 +2,8 @@ const User = require("../models/Users");
 const moment = require("moment");
 
 const { logEvents } = require("../middlewares/logger");
-const { set } = require("mongoose");
+
+const { getWeekday, getMonth, getHourAsAMPM } = require("../helpers/utils");
 
 const statisticsController = {
     totalStats: async (req, res, next) => {
@@ -40,6 +41,10 @@ const statisticsController = {
             let totalWatchedThisMonth = 0;
             let totalWatchedThisYear = 0;
             let lastTwentyWeekWatchedDataset = [];
+            let weekdaySeriesDataset = [];
+            let monthSeriesDataset = [];
+            let hourOfDaySeriesDataset = [];
+            let seriesEpisodesDataset = [];
             let castEpisodeDataset = [];
 
             const genreSeriesMap = new Map();
@@ -51,14 +56,34 @@ const statisticsController = {
             const productionCountriesSeriesMap = new Map();
             const statusSeriesMap = new Map();
             const twentyWeekMap = new Map();
+            const weekdayMap = new Map();
+            const monthMap = new Map();
+            const hourMap = new Map();
+            const seriesEpisodesMap = new Map();
             const castSeriesMap = new Map();
 
+            /**
+             * * 20 weeks view from current week
+             */
             const twentyWeeksAgo = moment().subtract(20, "weeks");
-
             let currentWeek = moment().week();
             for (let i = 0; i < 20; i++) {
                 twentyWeekMap.set(currentWeek, 0);
                 currentWeek = currentWeek === 1 ? 52 : currentWeek - 1;
+            }
+
+            /**
+             * * Setting All Months
+             */
+            for (let i = 0; i < 12; i++) {
+                monthMap.set(i, 0);
+            }
+
+            /**
+             * * Setting All Hours
+             */
+            for (let i = 0; i < 24; i++) {
+                hourMap.set(i, 0);
             }
 
             for (const serie of series) {
@@ -68,12 +93,6 @@ const statisticsController = {
                     if (moment(episode.date_watched).week() === moment().week()) totalWatchedThisWeek++;
                     if (moment(episode.date_watched).month() === moment().month()) totalWatchedThisMonth++;
                     if (moment(episode.date_watched).year() === moment().year()) totalWatchedThisYear++;
-
-                    const weekNumber = moment(episode.date_watched).week();
-
-                    if (weekNumber >= twentyWeeksAgo.week()) {
-                        twentyWeekMap.set(weekNumber, (twentyWeekMap.get(weekNumber) || 0) + 1);
-                    }
                 }
 
                 for (const genre of serie.genres) {
@@ -110,28 +129,53 @@ const statisticsController = {
                     totalWatchedRuntime += episode.runtime;
                     totalWatchedRating += episode.rating;
 
+                    const weekNumber = moment(episode.date_watched).week();
+                    if (weekNumber >= twentyWeeksAgo.week()) {
+                        twentyWeekMap.set(weekNumber, (twentyWeekMap.get(weekNumber) || 0) + 1);
+                    }
+
+                    const day = moment(episode.date_watched).day();
+                    weekdayMap.set(day, (weekdayMap.get(day) || 0) + 1);
+
+                    const month = moment(episode.date_watched).month();
+                    monthMap.set(month, (monthMap.get(month) || 0) + 1);
+
+                    const hour = moment(episode.date_watched).utc().hour();
+                    hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
+
                     for (const cast of episode.casts) {
                         castSeriesMap.set(cast.character, (castSeriesMap.get(cast.character) || 0) + 1);
                     }
                 }
 
-                if (releaseYearSeriesMap.has(moment(serie.first_air_date).year())) {
-                    releaseYearSeriesMap.set(
-                        moment(serie.first_air_date).year(),
-                        releaseYearSeriesMap.get(moment(serie.first_air_date).year()) + 1
-                    );
-                } else {
-                    releaseYearSeriesMap.set(moment(serie.first_air_date).year(), 1);
-                }
+                const seriesYear = moment(serie.first_air_date).year();
+                releaseYearSeriesMap.set(seriesYear, (releaseYearSeriesMap.has(seriesYear) || 0) + 1);
 
-                if (statusSeriesMap.has(serie.status)) {
-                    statusSeriesMap.set(serie.status, statusSeriesMap.get(serie.status) + 1);
-                } else {
-                    statusSeriesMap.set(serie.status, 1);
-                }
+                statusSeriesMap.set(serie.status, (statusSeriesMap.get(serie.status) || 0) + 1);
 
+                seriesEpisodesMap.set(serie.name, serie.episodes.length);
                 totalEpisode += serie.episodes.length;
             }
+
+            seriesEpisodesDataset = Array.from(seriesEpisodesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.count < b.count ? 1 : -1
+            );
+
+            hourOfDaySeriesDataset = Array.from(hourMap, ([name, count]) => ({
+                name,
+                hour: getHourAsAMPM(name),
+                count,
+            })).sort((a, b) => (a.name > b.name ? 1 : -1));
+
+            monthSeriesDataset = Array.from(monthMap, ([name, count]) => ({ name, month: getMonth(name), count })).sort(
+                (a, b) => (a.name > b.name ? 1 : -1)
+            );
+
+            weekdaySeriesDataset = Array.from(weekdayMap, ([name, count]) => ({
+                name,
+                day: getWeekday(name),
+                count,
+            })).sort((a, b) => (a.name > b.name ? 1 : -1));
 
             castEpisodeDataset = Array.from(castSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
                 a.count < b.count ? 1 : -1
@@ -306,6 +350,10 @@ const statisticsController = {
                     totalWatchedThisMonth,
                     totalWatchedThisYear,
                     lastTwentyWeekWatchedDataset,
+                    weekdaySeriesDataset,
+                    monthSeriesDataset,
+                    hourOfDaySeriesDataset,
+                    seriesEpisodesDataset,
                     castEpisodeDataset,
                 },
                 movies: {
