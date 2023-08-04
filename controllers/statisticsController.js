@@ -142,6 +142,7 @@ const statisticsController = {
 
                     const hour = moment(episode.date_watched).hour();
                     hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
+                    console.log(episode.date_watched, hour);
 
                     for (const cast of episode.casts) {
                         castSeriesMap.set(cast.character, (castSeriesMap.get(cast.character) || 0) + 1);
