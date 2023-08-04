@@ -140,7 +140,7 @@ const statisticsController = {
                     const month = moment(episode.date_watched).month();
                     monthMap.set(month, (monthMap.get(month) || 0) + 1);
 
-                    const hour = moment(episode.date_watched).utc().hour();
+                    const hour = moment(episode.date_watched).hour();
                     hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
 
                     for (const cast of episode.casts) {
