@@ -294,6 +294,7 @@ const statisticsController = {
             for (const movie of movies.filter(
                 (e) => moment(e.date_watched).utc().utcOffset("+05:30").year() === moment().year()
             )) {
+                console.log(moment(movie.date_watched).utc().utcOffset("+05:30"));
                 if (
                     moment(movie.date_watched).utc().utcOffset("+05:30").format("YYYY-MM-DD") ===
                     moment().format("YYYY-MM-DD")
@@ -314,7 +315,7 @@ const statisticsController = {
                 const month = moment(movie.date_watched).utc().utcOffset("+05:30").month();
                 monthMovieMap.set(month, (monthMovieMap.get(month) || 0) + 1);
 
-                const hour = (moment(movie.date_watched).utc().utcOffset("+05:30").hour() + 5) % 23;
+                const hour = moment(movie.date_watched).utc().utcOffset("+05:30").hour();
                 hourOfDayMovieMap.set(hour, (hourOfDayMovieMap.get(hour) || 0) + 1);
 
                 const weekNumber = moment(movie.date_watched).utc().utcOffset("+05:30").week();
