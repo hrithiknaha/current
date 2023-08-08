@@ -295,7 +295,7 @@ const statisticsController = {
                 (e) => moment(e.date_watched).utcOffset("+05:30").year() === moment().year()
             )) {
                 if (
-                    moment(episode.date_watched).utcOffset("+05:30").format("YYYY-MM-DD") ===
+                    moment(movie.date_watched).utcOffset("+05:30").format("YYYY-MM-DD") ===
                     moment().format("YYYY-MM-DD")
                 )
                     totalWatchedMoviesToday++;
