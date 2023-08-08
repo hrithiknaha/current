@@ -92,7 +92,7 @@ const statisticsController = {
                 )) {
                     if (
                         moment(episode.date_watched).utc().utcOffset("+05:30").format("YYYY-MM-DD") ===
-                        moment().format("YYYY-MM-DD")
+                        moment().utc().utcOffset("+05:30").format("YYYY-MM-DD")
                     )
                         totalWatchedToday++;
                     if (moment(episode.date_watched).utc().utcOffset("+05:30").week() === moment().week())
@@ -297,7 +297,7 @@ const statisticsController = {
                 console.log(moment(movie.date_watched).utc().utcOffset("+05:30"));
                 if (
                     moment(movie.date_watched).utc().utcOffset("+05:30").format("YYYY-MM-DD") ===
-                    moment().format("YYYY-MM-DD")
+                    moment().utc().utcOffset("+05:30").format("YYYY-MM-DD")
                 )
                     totalWatchedMoviesToday++;
                 if (moment(movie.date_watched).utc().utcOffset("+05:30").week() === moment().week())
