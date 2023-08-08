@@ -88,18 +88,18 @@ const statisticsController = {
 
             for (const serie of series) {
                 for (const episode of serie.episodes.filter(
-                    (e) => moment(e.date_watched).utcOffset("+05:30").year() === moment().year()
+                    (e) => moment(e.date_watched).utc().utcOffset("+05:30").year() === moment().year()
                 )) {
                     if (
-                        moment(episode.date_watched).utcOffset("+05:30").format("YYYY-MM-DD") ===
+                        moment(episode.date_watched).utc().utcOffset("+05:30").format("YYYY-MM-DD") ===
                         moment().format("YYYY-MM-DD")
                     )
                         totalWatchedToday++;
-                    if (moment(episode.date_watched).utcOffset("+05:30").week() === moment().week())
+                    if (moment(episode.date_watched).utc().utcOffset("+05:30").week() === moment().week())
                         totalWatchedThisWeek++;
-                    if (moment(episode.date_watched).utcOffset("+05:30").month() === moment().month())
+                    if (moment(episode.date_watched).utc().utcOffset("+05:30").month() === moment().month())
                         totalWatchedThisMonth++;
-                    if (moment(episode.date_watched).utcOffset("+05:30").year() === moment().year())
+                    if (moment(episode.date_watched).utc().utcOffset("+05:30").year() === moment().year())
                         totalWatchedThisYear++;
                 }
 
@@ -137,18 +137,18 @@ const statisticsController = {
                     totalWatchedRuntime += episode.runtime;
                     totalWatchedRating += episode.rating;
 
-                    const weekNumber = moment(episode.date_watched).utcOffset("+05:30").week();
+                    const weekNumber = moment(episode.date_watched).utc().utcOffset("+05:30").week();
                     if (weekNumber >= twentyWeeksAgo.week()) {
                         twentyWeekMap.set(weekNumber, (twentyWeekMap.get(weekNumber) || 0) + 1);
                     }
 
-                    const day = moment(episode.date_watched).utcOffset("+05:30").day();
+                    const day = moment(episode.date_watched).utc().utcOffset("+05:30").day();
                     weekdayMap.set(day, (weekdayMap.get(day) || 0) + 1);
 
-                    const month = moment(episode.date_watched).utcOffset("+05:30").month();
+                    const month = moment(episode.date_watched).utc().utcOffset("+05:30").month();
                     monthMap.set(month, (monthMap.get(month) || 0) + 1);
 
-                    const hour = moment(episode.date_watched).utcOffset("+05:30").hour();
+                    const hour = moment(episode.date_watched).utc().utcOffset("+05:30").hour();
                     hourMap.set(hour, (hourMap.get(hour) || 0) + 1);
 
                     for (const cast of episode.casts) {
@@ -292,32 +292,32 @@ const statisticsController = {
             }
 
             for (const movie of movies.filter(
-                (e) => moment(e.date_watched).utcOffset("+05:30").year() === moment().year()
+                (e) => moment(e.date_watched).utc().utcOffset("+05:30").year() === moment().year()
             )) {
                 if (
-                    moment(movie.date_watched).utcOffset("+05:30").format("YYYY-MM-DD") ===
+                    moment(movie.date_watched).utc().utcOffset("+05:30").format("YYYY-MM-DD") ===
                     moment().format("YYYY-MM-DD")
                 )
                     totalWatchedMoviesToday++;
-                if (moment(movie.date_watched).utcOffset("+05:30").week() === moment().week())
+                if (moment(movie.date_watched).utc().utcOffset("+05:30").week() === moment().week())
                     totalWatchedMoviesThisWeek++;
-                if (moment(movie.date_watched).utcOffset("+05:30").month() === moment().month())
+                if (moment(movie.date_watched).utc().utcOffset("+05:30").month() === moment().month())
                     totalWatchedMoviesThisMonth++;
-                if (moment(movie.date_watched).utcOffset("+05:30").year() === moment().year())
+                if (moment(movie.date_watched).utc().utcOffset("+05:30").year() === moment().year())
                     totalWatchedMoviesThisYear++;
             }
 
             for (const movie of movies) {
-                const day = moment(movie.date_watched).utcOffset("+05:30").day();
+                const day = moment(movie.date_watched).utc().utcOffset("+05:30").day();
                 weekMovieMap.set(day, (weekMovieMap.get(day) || 0) + 1);
 
-                const month = moment(movie.date_watched).utcOffset("+05:30").month();
+                const month = moment(movie.date_watched).utc().utcOffset("+05:30").month();
                 monthMovieMap.set(month, (monthMovieMap.get(month) || 0) + 1);
 
-                const hour = (moment(movie.date_watched).utcOffset("+05:30").hour() + 5) % 23;
+                const hour = (moment(movie.date_watched).utc().utcOffset("+05:30").hour() + 5) % 23;
                 hourOfDayMovieMap.set(hour, (hourOfDayMovieMap.get(hour) || 0) + 1);
 
-                const weekNumber = moment(movie.date_watched).utcOffset("+05:30").week();
+                const weekNumber = moment(movie.date_watched).utc().utcOffset("+05:30").week();
                 if (weekNumber >= twentyWeeksMoviesAgo.week()) {
                     twentyWeekMovieMap.set(weekNumber, (twentyWeekMovieMap.get(weekNumber) || 0) + 1);
                 }
