@@ -287,7 +287,7 @@ const statisticsController = {
                 const dateWatched = moment(movie.date_watched).format("YYYY-MM-DD");
 
                 if (dateWatched === moment().format("YYYY-MM-DD")) totalWatchedMoviesToday++;
-                if (moment(movie.date_watched).weekYear() === moment().weekYear()) totalWatchedMoviesThisWeek++;
+                if (moment(movie.date_watched).week() === moment().week()) totalWatchedMoviesThisWeek++;
                 if (moment(movie.date_watched).month() === moment().month()) totalWatchedMoviesThisMonth++;
                 if (moment(movie.date_watched).year() === moment().year()) totalWatchedMoviesThisYear++;
             }
