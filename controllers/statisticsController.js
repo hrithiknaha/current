@@ -32,6 +32,7 @@ const statisticsController = {
             let productionCompaniesSeriesDataset = [];
             let productionCountriesSeriesDataset = [];
             let statusSeriesDataset = [];
+            let castEpisodeDataset = [];
             let totalSeries = series.length;
             let totalEpisode = 0;
             let totalWatchedRuntime = 0;
@@ -45,7 +46,6 @@ const statisticsController = {
             let monthSeriesDataset = [];
             let hourOfDaySeriesDataset = [];
             let seriesEpisodesDataset = [];
-            let castEpisodeDataset = [];
 
             const genreSeriesMap = new Map();
             const releaseYearSeriesMap = new Map();
@@ -234,6 +234,10 @@ const statisticsController = {
             let totalWatchedMoviesThisWeek = 0;
             let totalWatchedMoviesThisMonth = 0;
             let totalWatchedMoviesThisYear = 0;
+            let lastTwentyWeekMoviesDataset = [];
+            let weekdayMoviesDataset = [];
+            let monthMoviesDataset = [];
+            let hourOfDayMoviesDataset = [];
 
             const genreMovieMap = new Map();
             const languageMovieMap = new Map();
@@ -242,17 +246,67 @@ const statisticsController = {
             const releaseYearMovieMap = new Map();
             const castMovieMap = new Map();
             const directorMovieMap = new Map();
+            const twentyWeekMovieMap = new Map();
+            const weekMovieMap = new Map();
+            const monthMovieMap = new Map();
+            const hourOfDayMovieMap = new Map();
 
-            for (const episode of movies.filter((e) => moment(e.date_watched).year() === moment().year())) {
-                const dateWatched = moment(episode.date_watched).format("YYYY-MM-DD");
+            /**
+             * * Setting All weekday for movies
+             */
+            for (let i = 0; i < 7; i++) {
+                weekMovieMap.set(i, 0);
+            }
+
+            /**
+             * * Setting All Months for movies
+             */
+            for (let i = 0; i < 12; i++) {
+                monthMovieMap.set(i, 0);
+            }
+
+            /**
+             * * Setting All Hours for movies
+             */
+            for (let i = 0; i < 24; i++) {
+                hourOfDayMovieMap.set(i, 0);
+            }
+
+            /**
+             * * 20 weeks view from current week for movies
+             */
+            const twentyWeeksMoviesAgo = moment().subtract(20, "weeks");
+            let currentWeekMovies = moment().week();
+
+            for (let i = 0; i < 20; i++) {
+                twentyWeekMovieMap.set(currentWeekMovies, 0);
+                currentWeekMovies = currentWeekMovies === 1 ? 52 : currentWeekMovies - 1;
+            }
+
+            for (const movie of movies.filter((e) => moment(e.date_watched).year() === moment().year())) {
+                const dateWatched = moment(movie.date_watched).format("YYYY-MM-DD");
 
                 if (dateWatched === moment().format("YYYY-MM-DD")) totalWatchedMoviesToday++;
-                if (moment(episode.date_watched).weekYear() === moment().weekYear()) totalWatchedMoviesThisWeek++;
-                if (moment(episode.date_watched).month() === moment().month()) totalWatchedMoviesThisMonth++;
-                if (moment(episode.date_watched).year() === moment().year()) totalWatchedMoviesThisYear++;
+                if (moment(movie.date_watched).weekYear() === moment().weekYear()) totalWatchedMoviesThisWeek++;
+                if (moment(movie.date_watched).month() === moment().month()) totalWatchedMoviesThisMonth++;
+                if (moment(movie.date_watched).year() === moment().year()) totalWatchedMoviesThisYear++;
             }
 
             for (const movie of movies) {
+                const day = moment(movie.date_watched).day();
+                weekMovieMap.set(day, (weekMovieMap.get(day) || 0) + 1);
+
+                const month = moment(movie.date_watched).month();
+                monthMovieMap.set(month, (monthMovieMap.get(month) || 0) + 1);
+
+                const hour = (moment(movie.date_watched).hour() + 5) % 23;
+                hourOfDayMovieMap.set(hour, (hourOfDayMovieMap.get(hour) || 0) + 1);
+
+                const weekNumber = moment(movie.date_watched).week();
+                if (weekNumber >= twentyWeeksMoviesAgo.week()) {
+                    twentyWeekMovieMap.set(weekNumber, (twentyWeekMovieMap.get(weekNumber) || 0) + 1);
+                }
+
                 for (const genre of movie.genres) {
                     genreMovieMap.set(genre, (genreMovieMap.get(genre) || 0) + 1);
                 }
@@ -296,6 +350,27 @@ const statisticsController = {
                 totalRuntimeMovie += movie.runtime;
                 totalRatingMovie += movie.rating;
             }
+            weekdayMoviesDataset = Array.from(weekMovieMap, ([name, count]) => ({
+                name,
+                day: getWeekday(name),
+                count,
+            })).sort((a, b) => (a.name > b.name ? 1 : -1));
+
+            monthMoviesDataset = Array.from(monthMovieMap, ([name, count]) => ({
+                name,
+                month: getMonth(name),
+                count,
+            })).sort((a, b) => (a.name > b.name ? 1 : -1));
+
+            hourOfDayMoviesDataset = Array.from(hourOfDayMovieMap, ([name, count]) => ({
+                name,
+                hour: getHourAsAMPM(name),
+                count,
+            })).sort((a, b) => (a.name > b.name ? 1 : -1));
+
+            lastTwentyWeekMoviesDataset = Array.from(twentyWeekMovieMap, ([name, count]) => ({ name, count })).sort(
+                (a, b) => (a.name > b.name ? 1 : -1)
+            );
 
             genreMovieDataset = Array.from(genreMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
                 a.count < b.count ? 1 : -1
@@ -372,6 +447,10 @@ const statisticsController = {
                     totalWatchedMoviesThisWeek,
                     totalWatchedMoviesThisMonth,
                     totalWatchedMoviesThisYear,
+                    lastTwentyWeekMoviesDataset,
+                    weekdayMoviesDataset,
+                    monthMoviesDataset,
+                    hourOfDayMoviesDataset,
                 },
             });
         } catch (error) {
