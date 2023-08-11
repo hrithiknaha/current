@@ -108,7 +108,10 @@ const statisticsController = {
                 }
 
                 for (const language of serie.spoken_languages) {
-                    languageSeriesMap.set(language.name, (languageSeriesMap.get(language.name) || 0) + 1);
+                    languageSeriesMap.set(
+                        language.english_name,
+                        (languageSeriesMap.get(language.english_name) || 0) + 1
+                    );
                 }
 
                 for (const network of serie.networks) {
