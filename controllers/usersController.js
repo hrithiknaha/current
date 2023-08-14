@@ -153,8 +153,8 @@ const usersController = {
             user.following = user.following.filter((user) => user.username != req.params.username);
             await user.save();
 
-            userToRemove.followers = user.followers.filter((user) => user.username != req.user);
-            await user.save();
+            userToRemove.followers = userToRemove.followers.filter((user) => user.username != req.user);
+            await userToRemove.save();
 
             res.status(200).json({ success: true, message: "User unfollowed" });
         } catch (error) {
@@ -166,7 +166,7 @@ const usersController = {
         try {
             logEvents(`${req.user} requests friends details`, "appLog.log");
 
-            const user = await User.findOne({ username: req.user })
+            const user = await User.findOne({ username: req.params.username })
                 .select("followers following")
                 .populate({ path: "followers", select: "username" })
                 .populate({ path: "following", select: "username" });
