@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema(
         password: { type: String, required: true },
         movies: [{ type: mongoose.Schema.Types.ObjectId, ref: "Movie" }],
         series: [{ type: mongoose.Schema.Types.ObjectId, ref: "Series" }],
+        followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+        following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     },
     { timeseries: true, timestamps: true }
 );

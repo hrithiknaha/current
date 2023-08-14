@@ -3,6 +3,25 @@ const User = require("../models/Users");
 const { logEvents } = require("../middlewares/logger");
 
 const usersController = {
+    searchUsers: async (req, res, next) => {
+        try {
+            logEvents(`Fetching user details`, "appLog.log");
+
+            const { username } = req.body;
+
+            const user = await User.findOne({ username }).select("-password");
+
+            if (!user)
+                return res.status(200).json({
+                    success: false,
+                    status_message: "The user you requested could not be found.",
+                });
+
+            res.status(200).json(user);
+        } catch (error) {
+            next(error);
+        }
+    },
     getUserDetails: async (req, res, next) => {
         try {
             logEvents(`Fetching user ${req.params.username} details`, "appLog.log");
@@ -11,6 +30,8 @@ const usersController = {
                 .select("-password")
                 .populate("movies")
                 .populate({ path: "series", populate: { path: "episodes" } })
+                .populate({ path: "followers", select: "username" })
+                .populate({ path: "following", select: "username" })
                 .lean();
 
             if (!user)
@@ -55,6 +76,108 @@ const usersController = {
             };
 
             return res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    followUser: async (req, res, next) => {
+        try {
+            logEvents(`${req.user} requests to follow ${req.params.username}`, "appLog.log");
+
+            const userToFollow = await User.findOne({ username: req.params.username });
+            const user = await User.findOne({ username: req.user }).populate("following");
+
+            if (!userToFollow)
+                return res.status(200).json({
+                    success: true,
+                    status_message: "No user found for the request. Cant send request",
+                });
+
+            if (!user)
+                return res.status(200).json({
+                    success: true,
+                    status_message: "No user found for the request.",
+                });
+
+            const alreadyFollowing = user.following.filter((user) => user.username === req.params.username)[0];
+
+            if (alreadyFollowing)
+                return res.status(409).json({
+                    success: true,
+                    status_message: "User already following.",
+                });
+
+            user.following.push(userToFollow._id);
+            userToFollow.followers.push(user._id);
+
+            await userToFollow.save();
+            await user.save();
+
+            res.status(200).json({ success: true, message: "User followed" });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    removeUser: async (req, res, next) => {
+        try {
+            logEvents(`${req.user} requests to remove ${req.params.username}`, "appLog.log");
+
+            const userToRemove = await User.findOne({ username: req.params.username }).populate({
+                path: "followers",
+                select: "username",
+            });
+            const user = await User.findOne({ username: req.user }).populate({ path: "following", select: "username" });
+
+            if (!userToRemove)
+                return res.status(200).json({
+                    success: true,
+                    status_message: "No user found for the request. Cant send request",
+                });
+
+            if (!user)
+                return res.status(200).json({
+                    success: true,
+                    status_message: "No user found for the request.",
+                });
+
+            const isFollowing = user.following.filter((user) => user.username === req.params.username)[0];
+
+            if (!isFollowing)
+                return res.status(200).json({
+                    success: true,
+                    status_message: "No user to unfollow.",
+                });
+
+            user.following = user.following.filter((user) => user.username != req.params.username);
+            await user.save();
+
+            userToRemove.followers = user.followers.filter((user) => user.username != req.user);
+            await user.save();
+
+            res.status(200).json({ success: true, message: "User unfollowed" });
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getFriends: async (req, res, next) => {
+        try {
+            logEvents(`${req.user} requests friends details`, "appLog.log");
+
+            const user = await User.findOne({ username: req.user })
+                .select("followers following")
+                .populate({ path: "followers", select: "username" })
+                .populate({ path: "following", select: "username" });
+
+            if (!user)
+                return res.status(200).json({
+                    success: true,
+                    status_message: "No user found for the request.",
+                });
+
+            res.status(200).json(user);
         } catch (error) {
             next(error);
         }
