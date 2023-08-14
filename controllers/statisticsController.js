@@ -10,7 +10,7 @@ const statisticsController = {
         try {
             logEvents(`Fetching stats of movies and tv series for user ${req.user}`, "appLog.log");
 
-            const user = await User.findOne({ username: req.user })
+            const user = await User.findOne({ username: req.params.username })
                 .populate({ path: "series", populate: { path: "episodes" } })
                 .populate("movies");
 

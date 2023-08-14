@@ -4,7 +4,7 @@ const seriesController = require("../controllers/seriesController");
 
 router.post("/add", seriesController.addSeries);
 router.post("/watch", seriesController.watchEpisode);
-router.get("/", seriesController.showAllSeries);
+router.get("/user/:username", seriesController.showAllSeries);
 router.get("/:seriesId", seriesController.showSeries);
 
 //Episodes

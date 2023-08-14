@@ -7,7 +7,7 @@ const episodesController = {
         try {
             logEvents(`Fetching all episodes for ${req.user}`, "appLog.log");
 
-            const user = await User.findOne({ username: req.user }).populate({
+            const user = await User.findOne({ username: req.params.username }).populate({
                 path: "series",
                 populate: { path: "episodes" },
             });

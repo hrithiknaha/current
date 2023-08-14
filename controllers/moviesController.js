@@ -30,7 +30,7 @@ const movieController = {
     readMovies: async (req, res, next) => {
         try {
             logEvents(`Searching all resources for user ${req.user}`, "appLog.log");
-            const user = await User.findOne({ username: req.user }).populate("movies").exec();
+            const user = await User.findOne({ username: req.params.username }).populate("movies").exec();
 
             if (!user)
                 return res.status(404).json({

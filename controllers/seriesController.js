@@ -105,13 +105,13 @@ const seriesController = {
 
             let user = null;
             if (req.query?.episodes) {
-                user = await User.findOne({ username: req.user }).populate({
+                user = await User.findOne({ username: req.params.username }).populate({
                     path: "series",
                     populate: {
                         path: "episodes",
                     },
                 });
-            } else user = await User.findOne({ username: req.user }).populate("series");
+            } else user = await User.findOne({ username: req.params.username }).populate("series");
 
             if (!user)
                 return res.status(200).json({
