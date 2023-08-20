@@ -176,7 +176,10 @@ const seriesController = {
             });
 
             //Adding episode to series and that series to logged in user
-            const user = await User.findOne({ username: req.user }).populate("series");
+            const user = await User.findOne({ username: req.user }).populate({
+                path: "series",
+                populate: { path: "episodes" },
+            });
 
             if (!user)
                 return res.status(404).json({
@@ -184,24 +187,20 @@ const seriesController = {
                     status_message: "No user found for the token.",
                 });
 
-            const allSeries = user.series;
+            const user_series = user.series;
 
-            const relevant_series = allSeries.filter((s) => s.series_id === parseInt(series_id))[0];
+            const series = user_series.filter((s) => s.series_id === parseInt(series_id))[0];
 
-            if (!relevant_series)
+            if (!series)
                 return res.status(404).json({
                     success: false,
                     status_message: "Series not found. Add series to catalogue before rating episodes.",
                 });
 
             //Handling logic to check if the episode has been rated already or not.
-            const episodeSeries = await Series.findOne({
-                series_id: relevant_series.series_id,
-            }).populate("episodes");
+            const episodes = series.episodes;
 
-            const allWatchedEpisodes = episodeSeries.episodes;
-
-            const duplicateEpisdoe = allWatchedEpisodes.filter((e) => e.episode_id === id);
+            const duplicateEpisdoe = episodes.filter((e) => e.episode_id === id);
 
             if (duplicateEpisdoe.length != 0)
                 return res.status(409).json({
@@ -223,8 +222,9 @@ const seriesController = {
                 guest_starts: topGuestStar,
             });
 
-            episodeSeries.episodes.push(watchedEpisode._id);
-            await episodeSeries.save();
+            const seriesObj = await Series.findById(series._id);
+            seriesObj.episodes.push(watchedEpisode._id);
+            await seriesObj.save();
 
             res.status(201).json({
                 success: true,
