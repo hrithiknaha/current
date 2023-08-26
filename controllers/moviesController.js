@@ -68,6 +68,7 @@ const movieController = {
                 spoken_languages,
                 release_date,
                 production_companies,
+                poster_path,
             } = response.data;
 
             const genreName = genres.map((genre) => genre.name);
@@ -125,6 +126,7 @@ const movieController = {
                 production_countries,
                 casts: topCast,
                 crews: topCrew,
+                poster_path,
             });
 
             user.movies.push(movie._id);

@@ -14,6 +14,7 @@ const movieSchema = new mongoose.Schema(
         spoken_languages: { type: [Object], required: true },
         casts: { type: [Object], required: true },
         crews: { type: [Object], required: true },
+        poster_path: { type: String, required: true },
     },
     { timeseries: true, timestamps: true }
 );
