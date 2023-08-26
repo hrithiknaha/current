@@ -16,6 +16,7 @@ const seriesSchema = new mongoose.Schema(
         origin_country: { type: [Object], required: true },
         production_companies: { type: [Object], required: true },
         production_countries: { type: [Object], required: true },
+        poster_path: { type: String, required: true },
     },
     { timeseries: true, timestamps: true }
 );
