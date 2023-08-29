@@ -297,7 +297,6 @@ const statisticsController = {
             for (const movie of movies.filter(
                 (e) => moment(e.date_watched).utc().utcOffset("+05:30").year() === moment().year()
             )) {
-                console.log(moment(movie.date_watched).utc().utcOffset("+05:30"));
                 if (
                     moment(movie.date_watched).utc().utcOffset("+05:30").format("YYYY-MM-DD") ===
                     moment().utc().utcOffset("+05:30").format("YYYY-MM-DD")
@@ -483,7 +482,6 @@ const statisticsController = {
 
             const movies = (await User.findOne({ username: req.user }).populate("movies")).movies;
 
-            console.log(movies);
             let totalRuntime = 0;
             let totalRating = 0;
             let totalMovies = movies.length;
