@@ -476,193 +476,192 @@ const statisticsController = {
         }
     },
 
-    // Not Used
-    // totalMovieStats: async (req, res, next) => {
-    //     try {
-    //         logEvents(`Fetching stats of movies for user ${req.user}`, "appLog.log");
+    totalMovieStats: async (req, res, next) => {
+        try {
+            logEvents(`Fetching stats of movies for user ${req.user}`, "appLog.log");
 
-    //         const movies = (await User.findOne({ username: req.user }).populate("movies")).movies;
+            const movies = (await User.findOne({ username: req.user }).populate("movies")).movies;
 
-    //         let totalRuntime = 0;
-    //         let totalRating = 0;
-    //         let totalMovies = movies.length;
+            let totalRuntime = 0;
+            let totalRating = 0;
+            let totalMovies = movies.length;
 
-    //         const genreMap = new Map();
-    //         const languageMap = new Map();
-    //         const productionCountriesMap = new Map();
-    //         const productionCompaniesMap = new Map();
-    //         const releaseYearMap = new Map();
-    //         const castMap = new Map();
-    //         const directorMap = new Map();
+            const genreMap = new Map();
+            const languageMap = new Map();
+            const productionCountriesMap = new Map();
+            const productionCompaniesMap = new Map();
+            const releaseYearMap = new Map();
+            const castMap = new Map();
+            const directorMap = new Map();
 
-    //         movies.forEach((movie) => {
-    //             movie.genres.forEach((genre) => {
-    //                 genreMap.set(genre, (genreMap.get(genre) || 0) + 1);
-    //             });
+            movies.forEach((movie) => {
+                movie.genres.forEach((genre) => {
+                    genreMap.set(genre, (genreMap.get(genre) || 0) + 1);
+                });
 
-    //             movie.spoken_languages.forEach((language) => {
-    //                 languageMap.set(language.english_name, (languageMap.get(language.english_name) || 0) + 1);
-    //             });
+                movie.spoken_languages.forEach((language) => {
+                    languageMap.set(language.english_name, (languageMap.get(language.english_name) || 0) + 1);
+                });
 
-    //             movie.production_countries.forEach((country) => {
-    //                 productionCountriesMap.set(country.name, (productionCountriesMap.get(country.name) || 0) + 1);
-    //             });
+                movie.production_countries.forEach((country) => {
+                    productionCountriesMap.set(country.name, (productionCountriesMap.get(country.name) || 0) + 1);
+                });
 
-    //             movie.production_companies.forEach((company) => {
-    //                 productionCompaniesMap.set(company.name, (productionCompaniesMap.get(company.name) || 0) + 1);
-    //             });
+                movie.production_companies.forEach((company) => {
+                    productionCompaniesMap.set(company.name, (productionCompaniesMap.get(company.name) || 0) + 1);
+                });
 
-    //             movie.casts.forEach((cast) => {
-    //                 castMap.set(cast.name, (castMap.get(cast.name) || 0) + 1);
-    //             });
+                movie.casts.forEach((cast) => {
+                    castMap.set(cast.name, (castMap.get(cast.name) || 0) + 1);
+                });
 
-    //             const directors = movie.crews.filter((c) => c.job === "Director");
-    //             directors.forEach((director) => {
-    //                 directorMap.set(director.name, (directorMap.get(director.name) || 0) + 1);
-    //             });
+                const directors = movie.crews.filter((c) => c.job === "Director");
+                directors.forEach((director) => {
+                    directorMap.set(director.name, (directorMap.get(director.name) || 0) + 1);
+                });
 
-    //             if (releaseYearMap.has(moment(movie.release_date).year())) {
-    //                 releaseYearMap.set(
-    //                     moment(movie.release_date).year(),
-    //                     releaseYearMap.get(moment(movie.release_date).year()) + 1
-    //                 );
-    //             } else {
-    //                 releaseYearMap.set(moment(movie.release_date).year(), 1);
-    //             }
+                if (releaseYearMap.has(moment(movie.release_date).year())) {
+                    releaseYearMap.set(
+                        moment(movie.release_date).year(),
+                        releaseYearMap.get(moment(movie.release_date).year()) + 1
+                    );
+                } else {
+                    releaseYearMap.set(moment(movie.release_date).year(), 1);
+                }
 
-    //             totalRuntime += movie.runtime;
-    //             totalRating += movie.rating;
-    //         });
+                totalRuntime += movie.runtime;
+                totalRating += movie.rating;
+            });
 
-    //         const genreDataset = Array.from(genreMap, ([name, count]) => ({ name, count }));
-    //         const languageDataset = Array.from(languageMap, ([name, count]) => ({ name, count }));
-    //         const productionCountriesDataset = Array.from(productionCountriesMap, ([name, count]) => ({ name, count }));
-    //         const productionCompaniesDataset = Array.from(productionCompaniesMap, ([name, count]) => ({ name, count }));
-    //         const releaseYearDataset = Array.from(releaseYearMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-    //             a.name > b.name ? 1 : -1
-    //         );
-    //         const castDataset = Array.from(castMap, ([name, count]) => ({ name, count }));
-    //         const directorDataset = Array.from(directorMap, ([name, count]) => ({ name, count }));
+            const genreDataset = Array.from(genreMap, ([name, count]) => ({ name, count }));
+            const languageDataset = Array.from(languageMap, ([name, count]) => ({ name, count }));
+            const productionCountriesDataset = Array.from(productionCountriesMap, ([name, count]) => ({ name, count }));
+            const productionCompaniesDataset = Array.from(productionCompaniesMap, ([name, count]) => ({ name, count }));
+            const releaseYearDataset = Array.from(releaseYearMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.name > b.name ? 1 : -1
+            );
+            const castDataset = Array.from(castMap, ([name, count]) => ({ name, count }));
+            const directorDataset = Array.from(directorMap, ([name, count]) => ({ name, count }));
 
-    //         const avgRating = totalRating / totalMovies;
+            const avgRating = totalRating / totalMovies;
 
-    //         return res.status(200).json({
-    //             totalRuntime,
-    //             avgRating,
-    //             totalMovies,
-    //             genreDataset,
-    //             languageDataset,
-    //             productionCompaniesDataset,
-    //             productionCountriesDataset,
-    //             releaseYearDataset,
-    //             castDataset,
-    //             directorDataset,
-    //         });
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // },
+            return res.status(200).json({
+                totalRuntime,
+                avgRating,
+                totalMovies,
+                genreDataset,
+                languageDataset,
+                productionCompaniesDataset,
+                productionCountriesDataset,
+                releaseYearDataset,
+                castDataset,
+                directorDataset,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 
-    // totalSeriesStats: async (req, res, next) => {
-    //     try {
-    //         logEvents(`Fetching stats of tv series for user ${req.user}`, "appLog.log");
+    totalSeriesStats: async (req, res, next) => {
+        try {
+            logEvents(`Fetching stats of tv series for user ${req.user}`, "appLog.log");
 
-    //         const user = await User.findOne({ username: req.user }).populate({
-    //             path: "series",
-    //             populate: { path: "episodes" },
-    //         });
+            const user = await User.findOne({ username: req.user }).populate({
+                path: "series",
+                populate: { path: "episodes" },
+            });
 
-    //         if (!user)
-    //             return res.status(200).json({
-    //                 success: false,
-    //                 status_message: "No user found for the token.",
-    //             });
+            if (!user)
+                return res.status(200).json({
+                    success: false,
+                    status_message: "No user found for the token.",
+                });
 
-    //         const series = user.series;
+            const series = user.series;
 
-    //         let totalEpisode = 0;
-    //         let totalWatchedRuntime = 0;
-    //         let totalWatchedRating = 0;
+            let totalEpisode = 0;
+            let totalWatchedRuntime = 0;
+            let totalWatchedRating = 0;
 
-    //         const genreMap = new Map();
-    //         const languageMap = new Map();
-    //         const networkMap = new Map();
-    //         const originCountryMap = new Map();
-    //         const productionCompaniesMap = new Map();
-    //         const productionCountriesMap = new Map();
-    //         const statusMap = new Map();
-    //         const releaseYearSeriesMap = new Map();
+            const genreMap = new Map();
+            const languageMap = new Map();
+            const networkMap = new Map();
+            const originCountryMap = new Map();
+            const productionCompaniesMap = new Map();
+            const productionCountriesMap = new Map();
+            const statusMap = new Map();
+            const releaseYearSeriesMap = new Map();
 
-    //         for (const serie of series) {
-    //             serie.genres.forEach((genre) => {
-    //                 genreMap.set(genre, (genreMap.get(genre) || 0) + 1);
-    //             });
+            for (const serie of series) {
+                serie.genres.forEach((genre) => {
+                    genreMap.set(genre, (genreMap.get(genre) || 0) + 1);
+                });
 
-    //             serie.spoken_languages.forEach((language) => {
-    //                 languageMap.set(language.name, (languageMap.get(language.name) || 0) + 1);
-    //             });
+                serie.spoken_languages.forEach((language) => {
+                    languageMap.set(language.name, (languageMap.get(language.name) || 0) + 1);
+                });
 
-    //             serie.networks.forEach((network) => {
-    //                 networkMap.set(network.name, (networkMap.get(network.name) || 0) + 1);
-    //             });
+                serie.networks.forEach((network) => {
+                    networkMap.set(network.name, (networkMap.get(network.name) || 0) + 1);
+                });
 
-    //             serie.origin_country.forEach((country) => {
-    //                 originCountryMap.set(country, (originCountryMap.get(country) || 0) + 1);
-    //             });
+                serie.origin_country.forEach((country) => {
+                    originCountryMap.set(country, (originCountryMap.get(country) || 0) + 1);
+                });
 
-    //             serie.production_countries.forEach((country) => {
-    //                 productionCountriesMap.set(country.name, (productionCountriesMap.get(country.name) || 0) + 1);
-    //             });
+                serie.production_countries.forEach((country) => {
+                    productionCountriesMap.set(country.name, (productionCountriesMap.get(country.name) || 0) + 1);
+                });
 
-    //             serie.production_companies.forEach((company) => {
-    //                 productionCompaniesMap.set(company.name, (productionCompaniesMap.get(company.name) || 0) + 1);
-    //             });
+                serie.production_companies.forEach((company) => {
+                    productionCompaniesMap.set(company.name, (productionCompaniesMap.get(company.name) || 0) + 1);
+                });
 
-    //             serie.episodes.forEach((episode) => {
-    //                 totalWatchedRuntime += episode.runtime;
-    //                 totalWatchedRating += episode.rating;
-    //             });
+                serie.episodes.forEach((episode) => {
+                    totalWatchedRuntime += episode.runtime;
+                    totalWatchedRating += episode.rating;
+                });
 
-    //             totalEpisode += serie.episodes.length;
+                totalEpisode += serie.episodes.length;
 
-    //             statusMap.set(serie.status, (statusMap.get(serie.status) || 0) + 1);
-    //             releaseYearSeriesMap.set(
-    //                 moment(serie.first_air_date).year(),
-    //                 (releaseYearSeriesMap.has(moment(serie.first_air_date).year()) || 0) + 1
-    //             );
-    //         }
+                statusMap.set(serie.status, (statusMap.get(serie.status) || 0) + 1);
+                releaseYearSeriesMap.set(
+                    moment(serie.first_air_date).year(),
+                    (releaseYearSeriesMap.has(moment(serie.first_air_date).year()) || 0) + 1
+                );
+            }
 
-    //         const genreDataset = Array.from(genreMap, ([name, count]) => ({ name, count }));
-    //         const languageDataset = Array.from(languageMap, ([name, count]) => ({ name, count }));
-    //         const networkDataset = Array.from(networkMap, ([name, count]) => ({ name, count }));
-    //         const originCountryDataset = Array.from(originCountryMap, ([name, count]) => ({ name, count }));
-    //         const productionCompaniesDataset = Array.from(productionCompaniesMap, ([name, count]) => ({ name, count }));
-    //         const productionCountriesDataset = Array.from(productionCountriesMap, ([name, count]) => ({ name, count }));
-    //         const statusDataset = Array.from(statusMap, ([name, count]) => ({ name, count }));
-    //         const releaseYearDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, count })).sort(
-    //             (a, b) => (a.name > b.name ? 1 : -1)
-    //         );
+            const genreDataset = Array.from(genreMap, ([name, count]) => ({ name, count }));
+            const languageDataset = Array.from(languageMap, ([name, count]) => ({ name, count }));
+            const networkDataset = Array.from(networkMap, ([name, count]) => ({ name, count }));
+            const originCountryDataset = Array.from(originCountryMap, ([name, count]) => ({ name, count }));
+            const productionCompaniesDataset = Array.from(productionCompaniesMap, ([name, count]) => ({ name, count }));
+            const productionCountriesDataset = Array.from(productionCountriesMap, ([name, count]) => ({ name, count }));
+            const statusDataset = Array.from(statusMap, ([name, count]) => ({ name, count }));
+            const releaseYearDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, count })).sort(
+                (a, b) => (a.name > b.name ? 1 : -1)
+            );
 
-    //         const avgRating = totalWatchedRating / totalEpisode;
+            const avgRating = totalWatchedRating / totalEpisode;
 
-    //         res.status(200).json({
-    //             genreDataset,
-    //             totalSeries: series.length,
-    //             totalEpisode,
-    //             avgRating,
-    //             totalWatchedRuntime,
-    //             languageDataset,
-    //             networkDataset,
-    //             originCountryDataset,
-    //             productionCompaniesDataset,
-    //             productionCountriesDataset,
-    //             statusDataset,
-    //             releaseYearDataset,
-    //         });
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // },
+            res.status(200).json({
+                genreDataset,
+                totalSeries: series.length,
+                totalEpisode,
+                avgRating,
+                totalWatchedRuntime,
+                languageDataset,
+                networkDataset,
+                originCountryDataset,
+                productionCompaniesDataset,
+                productionCountriesDataset,
+                statusDataset,
+                releaseYearDataset,
+            });
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = statisticsController;
