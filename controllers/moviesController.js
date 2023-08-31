@@ -74,15 +74,13 @@ const movieController = {
             const genreName = genres.map((genre) => genre.name);
 
             const casts = credits.cast;
-            const topCast = casts
-                .filter((cast) => cast.order < 5)
-                .map((cast) => {
-                    return {
-                        id: cast.id,
-                        name: cast.name,
-                        character: cast.character,
-                    };
-                });
+            const topCast = casts.map((cast) => {
+                return {
+                    id: cast.id,
+                    name: cast.name,
+                    character: cast.character,
+                };
+            });
 
             const crews = credits.crew;
             const topCrew = crews
