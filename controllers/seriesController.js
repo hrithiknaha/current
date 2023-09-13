@@ -27,7 +27,7 @@ const seriesController = {
                 production_companies,
                 production_countries,
                 episode_run_time,
-                poster_data,
+                poster_path,
             } = response.data;
 
             const user = await User.findOne({ username: req.user }).populate("series");
@@ -55,7 +55,7 @@ const seriesController = {
                 origin_country,
                 production_companies,
                 production_countries,
-                poster_data,
+                poster_path,
             });
 
             user.series.push(tv._id);
