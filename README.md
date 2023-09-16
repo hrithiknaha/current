@@ -1,1 +1,1 @@
-## Current | Movies & TV
+## Current | Movies and TV
