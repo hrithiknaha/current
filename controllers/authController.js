@@ -29,15 +29,15 @@ const authController = {
 
             await User.create({ firstname, lastname, username, password: hashedPassword });
 
-            const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1d" });
-            const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+            const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "30d" });
+            // const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
 
-            res.cookie("jwt", refreshToken, {
-                httpOnly: true, //accessible only by web server
-                secure: true, //https
-                sameSite: "None", //cross-site cookie
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-            });
+            // res.cookie("jwt", refreshToken, {
+            //     httpOnly: true, //accessible only by web server
+            //     secure: true, //https
+            //     sameSite: "None", //cross-site cookie
+            //     maxAge: 7 * 24 * 60 * 60 * 1000,
+            // });
 
             return res.status(201).json({
                 success: true,
@@ -74,20 +74,20 @@ const authController = {
                 .then((match) => {
                     if (match) {
                         const accessToken = jwt.sign({ username }, process.env.ACCESS_TOKEN_SECRET, {
-                            expiresIn: "1d",
+                            expiresIn: "30d",
                         });
-                        const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, {
-                            expiresIn: "7d",
-                        });
+                        // const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN_SECRET, {
+                        //     expiresIn: "7d",
+                        // });
 
-                        res.cookie("jwt", refreshToken, {
-                            httpOnly: true, //accessible only by web server
-                            secure: true, //https
-                            sameSite: "None", //cross-site cookie
-                            maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
-                        });
+                        // res.cookie("jwt", refreshToken, {
+                        //     httpOnly: true, //accessible only by web server
+                        //     secure: true, //https
+                        //     sameSite: "None", //cross-site cookie
+                        //     maxAge: 7 * 24 * 60 * 60 * 1000, //cookie expiry: set to match rT
+                        // });
 
-                        res.status(200).json({ accessToken, expiresIn: 15 * 60 * 1000 });
+                        res.status(200).json({ accessToken });
                     } else {
                         return res.status(401).json({
                             success: false,
@@ -101,37 +101,37 @@ const authController = {
         }
     },
 
-    refreshUser: async (req, res, next) => {
-        try {
-            logEvents("Refreshing token for user", "appLog.log");
+    // refreshUser: async (req, res, next) => {
+    //     try {
+    //         logEvents("Refreshing token for user", "appLog.log");
 
-            const refreshToken = req.cookies.jwt;
+    //         const refreshToken = req.cookies.jwt;
 
-            if (!req.cookies?.jwt)
-                return res.status(401).json({
-                    success: false,
-                    status_message: "Cookie does not have the required token. Request Unauthorized.",
-                });
+    //         if (!req.cookies?.jwt)
+    //             return res.status(401).json({
+    //                 success: false,
+    //                 status_message: "Cookie does not have the required token. Request Unauthorized.",
+    //             });
 
-            const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    //         const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
 
-            const foundUser = await User.findOne({ username: decoded.username });
+    //         const foundUser = await User.findOne({ username: decoded.username });
 
-            if (!foundUser)
-                return res.status(401).json({
-                    success: false,
-                    status_message: "No match found. Request Unauthorized.",
-                });
+    //         if (!foundUser)
+    //             return res.status(401).json({
+    //                 success: false,
+    //                 status_message: "No match found. Request Unauthorized.",
+    //             });
 
-            const accessToken = jwt.sign({ username: decoded.username }, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: "1d",
-            });
+    //         const accessToken = jwt.sign({ username: decoded.username }, process.env.ACCESS_TOKEN_SECRET, {
+    //             expiresIn: "1d",
+    //         });
 
-            res.json({ accessToken, expiresIn: 1 * 60 * 1000 });
-        } catch (error) {
-            next(error);
-        }
-    },
+    //         res.json({ accessToken, expiresIn: 1 * 60 * 1000 });
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // },
 
     logoutUser: async (req, res, next) => {
         try {
@@ -144,10 +144,10 @@ const authController = {
                     status_message: "No Cookie found.",
                 }); //No content
 
-            res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+            // res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
             res.json({
                 success: true,
-                status_message: "Cookies cleared. User logged out.",
+                status_message: "User logged out.",
             });
         } catch (error) {
             next(error);
