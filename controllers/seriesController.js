@@ -66,7 +66,8 @@ const seriesController = {
             user.save();
 
             const client = getRedisClient();
-            client.del("user");
+            client.del(`user:${req.user}-seriesId`);
+            client.del(`user:${req.user}`);
 
             return res.status(201).json({
                 success: true,
@@ -237,9 +238,10 @@ const seriesController = {
 
             const client = getRedisClient();
 
-            const cacheKey = `series:${series_id}`;
+            const cacheKey = `user:${req.user}-series:${series_id}`;
 
-            if (seriesObj.number_of_episodes === seriesObj.episodes.length) await client.lRem("seriesId", 1, cacheKey);
+            if (seriesObj.number_of_episodes === seriesObj.episodes.length)
+                await client.lRem(`user:${req.user}-seriesId`, 1, cacheKey);
 
             let episodeNumber = parseInt(episode_number);
             let seasonNumber = parseInt(season_number);

@@ -133,7 +133,7 @@ const movieController = {
             user.save();
 
             const client = getRedisClient();
-            client.del("user");
+            client.del(`user:${req.user}`);
 
             return res.status(201).json({
                 success: true,
