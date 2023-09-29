@@ -5,10 +5,10 @@ let client = null;
 (async () => {
     try {
         client = createClient({
-            password: "hDFCApIImqW7kCZNzWFADP4EoaEAgVAX",
+            password: process.env.REDIS_PASSWORD,
             socket: {
-                host: "redis-17310.c305.ap-south-1-1.ec2.cloud.redislabs.com",
-                port: 17310,
+                host: process.env.REDIS_HOST,
+                port: process.env.REDIS_PORT,
             },
         });
 
@@ -18,7 +18,7 @@ let client = null;
 
         await client.connect();
 
-        console.log("Redis cache app database connected...");
+        console.log("Redis cache app database connected.");
     } catch (error) {
         console.error("Redis app connection Error:", error);
     }
