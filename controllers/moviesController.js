@@ -2,6 +2,8 @@ const axios = require("axios");
 
 const { logEvents } = require("../middlewares/logger");
 
+const getRedisClient = require("../configs/redisConfig");
+
 const Movie = require("../models/Movies");
 const User = require("../models/Users");
 
@@ -129,6 +131,9 @@ const movieController = {
 
             user.movies.push(movie._id);
             user.save();
+
+            const client = getRedisClient();
+            client.del("user");
 
             return res.status(201).json({
                 success: true,

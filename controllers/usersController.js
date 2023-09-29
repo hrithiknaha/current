@@ -2,6 +2,8 @@ const User = require("../models/Users");
 
 const { logEvents } = require("../middlewares/logger");
 
+const getRedisClient = require("../configs/redisConfig");
+
 const usersController = {
     searchUsers: async (req, res, next) => {
         try {
@@ -11,13 +13,9 @@ const usersController = {
 
             const user = await User.findOne({ username }).select("-password");
 
-            if (!user)
-                return res.status(200).json({
-                    success: false,
-                    status_message: "The user you requested could not be found.",
-                });
+            if (!user) return res.status(200).json([]);
 
-            res.status(200).json(user);
+            res.status(200).json([user]);
         } catch (error) {
             next(error);
         }
@@ -26,22 +24,33 @@ const usersController = {
         try {
             logEvents(`Fetching user ${req.params.username} details`, "appLog.log");
 
-            const user = await User.findOne({ username: req.params.username })
-                .select("-password")
-                .populate("movies")
-                .populate({ path: "series", populate: { path: "episodes" } })
-                .populate({ path: "followers", select: "username" })
-                .populate({ path: "following", select: "username" })
-                .lean();
+            const username = req.params.username;
 
-            if (!user)
-                return res.status(404).json({
-                    success: false,
-                    status_message: "The user you requested could not be found.",
-                    data: {},
-                });
+            const client = getRedisClient();
 
-            return res.status(200).json(user);
+            const userCache = await client.get(`user:${username}`);
+
+            if (userCache) return res.status(200).json(JSON.parse(userCache));
+            else {
+                const user = await User.findOne({ username })
+                    .select("-password")
+                    .populate("movies")
+                    .populate({ path: "series", populate: { path: "episodes" } })
+                    .populate({ path: "followers", select: "username" })
+                    .populate({ path: "following", select: "username" })
+                    .lean();
+
+                if (!user)
+                    return res.status(404).json({
+                        success: false,
+                        status_message: "The user you requested could not be found.",
+                        data: {},
+                    });
+
+                client.setEx(`user:${username}`, 3600, JSON.stringify(user));
+
+                return res.status(200).json(user);
+            }
         } catch (error) {
             next(error);
         }

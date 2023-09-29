@@ -1,6 +1,10 @@
 const axios = require("axios");
 
+const getRedisClient = require("../configs/redisConfig");
+
 const { logEvents } = require("../middlewares/logger");
+const { axiosPublicInstance } = require("../configs/axios");
+
 const Series = require("../models/Series");
 const User = require("../models/Users");
 const Episode = require("../models/Episodes");
@@ -60,6 +64,9 @@ const seriesController = {
 
             user.series.push(tv._id);
             user.save();
+
+            const client = getRedisClient();
+            client.del("user");
 
             return res.status(201).json({
                 success: true,
@@ -227,6 +234,47 @@ const seriesController = {
             const seriesObj = await Series.findById(series._id);
             seriesObj.episodes.push(watchedEpisode._id);
             await seriesObj.save();
+
+            const client = getRedisClient();
+
+            const cacheKey = `series:${series_id}`;
+
+            if (seriesObj.number_of_episodes === seriesObj.episodes.length) await client.lRem("seriesId", 1, cacheKey);
+
+            let episodeNumber = parseInt(episode_number);
+            let seasonNumber = parseInt(season_number);
+
+            axiosPublicInstance
+                .get(`/api/tmdb/series/${series_id}`)
+                .then((response) => {
+                    const seriesDetails = response.data;
+
+                    //total seasons
+                    const totalSeasons = seriesDetails.number_of_seasons;
+
+                    //Next Episode?
+                    const currentSeason = seriesDetails.seasons.find((season) => season.season_number === seasonNumber);
+
+                    if (seasonNumber <= totalSeasons) {
+                        if (episodeNumber < currentSeason.episode_count) episodeNumber += 1;
+                        else if (episodeNumber === currentSeason.episode_count) {
+                            episodeNumber = 1;
+                            seasonNumber += 1;
+                        }
+
+                        const nextEpisode = { season_number: seasonNumber, episode_number: episodeNumber };
+
+                        const dataToCache = { seriesDetails, nextEpisode, show: seriesObj };
+
+                        client.setEx(cacheKey, 3600, JSON.stringify(dataToCache));
+                    } else {
+                        return null; // Return null for cases where there is no next episode
+                    }
+                })
+                .catch((error) => {
+                    console.error(error); // Handle errors for individual Axios requests locally
+                    return null; // Return null for failed requests
+                });
 
             res.status(201).json({
                 success: true,
