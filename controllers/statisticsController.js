@@ -65,7 +65,7 @@ const statisticsController = {
             /**
              * * 20 weeks view from current week
              */
-            const twentyWeeksAgo = moment().subtract(20, "weeks");
+            const twentyWeeksAgoUnix = moment().subtract(20, "weeks").unix();
             let currentWeek = moment().week();
             for (let i = 0; i < 20; i++) {
                 twentyWeekMap.set(currentWeek, 0);
@@ -140,8 +140,9 @@ const statisticsController = {
                     totalWatchedRuntime += episode.runtime;
                     totalWatchedRating += episode.rating;
 
+                    const weekUnix = moment(episode.date_watched).utc().utcOffset("+05:30").unix();
                     const weekNumber = moment(episode.date_watched).utc().utcOffset("+05:30").week();
-                    if (weekNumber >= twentyWeeksAgo.week()) {
+                    if (weekUnix >= twentyWeeksAgoUnix) {
                         twentyWeekMap.set(weekNumber, (twentyWeekMap.get(weekNumber) || 0) + 1);
                     }
 
@@ -286,7 +287,7 @@ const statisticsController = {
             /**
              * * 20 weeks view from current week for movies
              */
-            const twentyWeeksMoviesAgo = moment().subtract(20, "weeks");
+            const twentyWeeksMoviesAgoUnix = moment().subtract(20, "weeks").unix();
             let currentWeekMovies = moment().week();
 
             for (let i = 0; i < 20; i++) {
@@ -320,8 +321,9 @@ const statisticsController = {
                 const hour = moment(movie.date_watched).utc().utcOffset("+05:30").hour();
                 hourOfDayMovieMap.set(hour, (hourOfDayMovieMap.get(hour) || 0) + 1);
 
+                const weekNumberUnix = moment(movie.date_watched).utc().utcOffset("+05:30").unix();
                 const weekNumber = moment(movie.date_watched).utc().utcOffset("+05:30").week();
-                if (weekNumber >= twentyWeeksMoviesAgo.week()) {
+                if (weekNumberUnix >= twentyWeeksMoviesAgoUnix) {
                     twentyWeekMovieMap.set(weekNumber, (twentyWeekMovieMap.get(weekNumber) || 0) + 1);
                 }
 
