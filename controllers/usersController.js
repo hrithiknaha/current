@@ -28,7 +28,7 @@ const usersController = {
 
             const client = getRedisClient();
 
-            const userCache = await client.get(`user:${username}`);
+            const userCache = await client.get(`${process.env.NODE_ENV}-user:${username}`);
 
             if (userCache) return res.status(200).json(JSON.parse(userCache));
             else {
@@ -47,7 +47,7 @@ const usersController = {
                         data: {},
                     });
 
-                client.setEx(`user:${username}`, 3600, JSON.stringify(user));
+                client.setEx(`${process.env.NODE_ENV}-user:${username}`, 3600, JSON.stringify(user));
 
                 return res.status(200).json(user);
             }

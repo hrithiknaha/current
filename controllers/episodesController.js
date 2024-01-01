@@ -40,7 +40,7 @@ const episodesController = {
 
             const client = getRedisClient();
 
-            let seriesIdCacheArray = await client.lRange(`user:${req.user}-seriesId`, 0, -1); // Get all seriesIds without altering the list
+            let seriesIdCacheArray = await client.lRange(`${process.env.NODE_ENV}-user:${req.user}-seriesId`, 0, -1); // Get all seriesIds without altering the list
 
             // if seriesId array has data, get the series details for each seriesId
             if (seriesIdCacheArray.length > 0) {
@@ -88,8 +88,8 @@ const episodesController = {
                     const cacheKey = `user:${req.user}-series:${series_id}`;
 
                     // Add seriesId to the list
-                    await client.rPush(`user:${req.user}-seriesId`, cacheKey);
-                    await client.expire(`user:${req.user}-seriesId`, 3600);
+                    await client.rPush(`${process.env.NODE_ENV}-user:${req.user}-seriesId`, cacheKey);
+                    await client.expire(`${process.env.NODE_ENV}-user:${req.user}-seriesId`, 3600);
 
                     let seasonNumber = 1;
                     let episodeNumber = 0;
