@@ -674,7 +674,7 @@ const statisticsController = {
             const movies = user.movies;
 
             const payloadMovie = movies.filter((movie) => {
-                return moment(movie.date_watched).week() === weekNumber;
+                return moment(movie.date_watched).utc().utcOffset("+05:30").week() === weekNumber;
             });
 
             return res.json(payloadMovie);
@@ -692,7 +692,7 @@ const statisticsController = {
             const movies = user.movies;
 
             const payloadMovie = movies.filter((movie) => {
-                return moment(movie.date_watched).hour() === hour;
+                return moment(movie.date_watched).utc().utcOffset("+05:30").hour() === hour;
             });
 
             return res.json(payloadMovie);
@@ -710,7 +710,7 @@ const statisticsController = {
             const movies = user.movies;
 
             const payloadMovie = movies.filter((movie) => {
-                return moment(movie.date_watched).day() === day;
+                return moment(movie.date_watched).utc().utcOffset("+05:30").day() === day;
             });
 
             return res.json(payloadMovie);
@@ -728,7 +728,7 @@ const statisticsController = {
             const movies = user.movies;
 
             const payloadMovie = movies.filter((movie) => {
-                return moment(movie.date_watched).month() === month;
+                return moment(movie.date_watched).utc().utcOffset("+05:30").month() === month;
             });
 
             return res.json(payloadMovie);
@@ -746,7 +746,7 @@ const statisticsController = {
             const movies = user.movies;
 
             const payloadMovie = movies.filter((movie) => {
-                return moment(movie.release_date).year() === year;
+                return moment(movie.release_date).utc().utcOffset("+05:30").year() === year;
             });
 
             return res.json(payloadMovie);
