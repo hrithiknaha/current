@@ -664,6 +664,196 @@ const statisticsController = {
             next(error);
         }
     },
+
+    lastTwentyWeeksMovie: async (req, res, next) => {
+        try {
+            const weekNumber = Number(req.params.week);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) => {
+                return moment(movie.date_watched).week() === weekNumber;
+            });
+
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    hourOfDayMovie: async (req, res, next) => {
+        try {
+            const hour = Number(req.params.hour);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) => {
+                return moment(movie.date_watched).hour() === hour;
+            });
+
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    dayOfWeek: async (req, res, next) => {
+        try {
+            const day = Number(req.params.day);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) => {
+                return moment(movie.date_watched).day() === day;
+            });
+
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    month: async (req, res, next) => {
+        try {
+            const month = Number(req.params.month);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) => {
+                return moment(movie.date_watched).month() === month;
+            });
+
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    year: async (req, res, next) => {
+        try {
+            const year = Number(req.params.year);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) => {
+                return moment(movie.release_date).year() === year;
+            });
+
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    genre: async (req, res, next) => {
+        try {
+            const genre = String(req.params.genre);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) => {
+                return movie.genres.includes(genre);
+            });
+
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+    language: async (req, res, next) => {
+        try {
+            const language = String(req.params.language);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) =>
+                movie.spoken_languages.some((lang) => lang.english_name === language)
+            );
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    productionCountry: async (req, res, next) => {
+        try {
+            const country = String(req.params.country);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) =>
+                movie.production_countries.some((con) => con.name === country)
+            );
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    actor: async (req, res, next) => {
+        try {
+            const actor = String(req.params.actor);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) => movie.casts.some((con) => con.name === actor));
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    director: async (req, res, next) => {
+        try {
+            const director = String(req.params.director);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) =>
+                movie.crews.some((con) => con.name === director && con.job === "Director")
+            );
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    production: async (req, res, next) => {
+        try {
+            const production = String(req.params.production);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("movies");
+
+            const movies = user.movies;
+
+            const payloadMovie = movies.filter((movie) =>
+                movie.production_companies.some((con) => con.name === production)
+            );
+            return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
 };
 
 module.exports = statisticsController;
