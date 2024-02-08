@@ -755,7 +755,7 @@ const statisticsController = {
         }
     },
 
-    genre: async (req, res, next) => {
+    getMovieGenre: async (req, res, next) => {
         try {
             const genre = String(req.params.genre);
 
@@ -850,6 +850,331 @@ const statisticsController = {
                 movie.production_companies.some((con) => con.name === production)
             );
             return res.json(payloadMovie);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsGenre: async (req, res, next) => {
+        try {
+            const genre = String(req.params.genre);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("series");
+
+            const shows = user.series;
+
+            const filteredShow = shows.filter((show) => {
+                return show.genres.includes(genre);
+            });
+
+            return res.json(filteredShow);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsStatus: async (req, res, next) => {
+        try {
+            const status = String(req.params.status);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("series");
+
+            const shows = user.series;
+
+            const filteredShow = shows.filter((show) => {
+                return show.status === status;
+            });
+
+            return res.json(filteredShow);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsLanguage: async (req, res, next) => {
+        try {
+            const language = String(req.params.language);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("series");
+
+            const shows = user.series;
+
+            const filteredShow = shows.filter((show) => {
+                return show.spoken_languages.some((lang) => lang.english_name === language);
+            });
+
+            return res.json(filteredShow);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsOriginCountry: async (req, res, next) => {
+        try {
+            const country = String(req.params.country);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("series");
+
+            const shows = user.series;
+
+            const filteredShow = shows.filter((show) => {
+                return show.origin_country.some((coun) => coun === country);
+            });
+
+            return res.json(filteredShow);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsProductionCountry: async (req, res, next) => {
+        try {
+            const country = String(req.params.country);
+
+            const user = await User.findOne({ username: req.params.username }).select("-password").populate("series");
+
+            const shows = user.series;
+
+            const filteredShow = shows.filter((show) => {
+                return show.production_countries.some((coun) => coun.name === country);
+            });
+
+            return res.json(filteredShow);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsLastTwentyWeeks: async (req, res, next) => {
+        try {
+            const weekNumber = Number(req.params.week);
+
+            const user = await User.findOne({ username: req.params.username })
+                .select("-password")
+                .populate({ path: "series", populate: { path: "episodes" } })
+                .lean();
+
+            const shows = user.series;
+
+            const seriesWithFilteredEpisodes = [];
+
+            shows.map((show) => {
+                const filteredEpisodes = show.episodes.filter((episode) => {
+                    return moment(episode.date_watched).utc().utcOffset("+05:30").week() === weekNumber;
+                });
+
+                const {
+                    genres,
+                    spoken_languages,
+                    networks,
+                    origin_country,
+                    production_companies,
+                    production_countries,
+                    ...showInfo
+                } = show;
+
+                if (filteredEpisodes.length > 0) {
+                    const filteredSeries = {
+                        ...showInfo,
+                        episodes: filteredEpisodes.map(({ casts, crews, guest_starts, ...episodeInfo }) => episodeInfo),
+                    };
+
+                    seriesWithFilteredEpisodes.push(filteredSeries);
+                }
+            });
+            return res.json(seriesWithFilteredEpisodes);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsHour: async (req, res, next) => {
+        try {
+            const hour = Number(req.params.hour);
+
+            const user = await User.findOne({ username: req.params.username })
+                .select("-password")
+                .populate({ path: "series", populate: { path: "episodes" } })
+                .lean();
+
+            const shows = user.series;
+
+            const seriesWithFilteredEpisodes = [];
+
+            shows.map((show) => {
+                const filteredEpisodes = show.episodes.filter((episode) => {
+                    return moment(episode.date_watched).utc().utcOffset("+05:30").hour() === hour;
+                });
+
+                const {
+                    genres,
+                    spoken_languages,
+                    networks,
+                    origin_country,
+                    production_companies,
+                    production_countries,
+                    ...showInfo
+                } = show;
+
+                if (filteredEpisodes.length > 0) {
+                    const filteredSeries = {
+                        ...showInfo,
+                        episodes: filteredEpisodes.map(({ casts, crews, guest_starts, ...episodeInfo }) => episodeInfo),
+                    };
+
+                    seriesWithFilteredEpisodes.push(filteredSeries);
+                }
+            });
+            return res.json(seriesWithFilteredEpisodes);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsWeekday: async (req, res, next) => {
+        try {
+            const day = Number(req.params.day);
+
+            const user = await User.findOne({ username: req.params.username })
+                .select("-password")
+                .populate({ path: "series", populate: { path: "episodes" } })
+                .lean();
+
+            const shows = user.series;
+
+            const seriesWithFilteredEpisodes = [];
+
+            shows.map((show) => {
+                const filteredEpisodes = show.episodes.filter((episode) => {
+                    return moment(episode.date_watched).utc().utcOffset("+05:30").weekday() === day;
+                });
+
+                const {
+                    genres,
+                    spoken_languages,
+                    networks,
+                    origin_country,
+                    production_companies,
+                    production_countries,
+                    ...showInfo
+                } = show;
+
+                if (filteredEpisodes.length > 0) {
+                    const filteredSeries = {
+                        ...showInfo,
+                        episodes: filteredEpisodes.map(({ casts, crews, guest_starts, ...episodeInfo }) => episodeInfo),
+                    };
+
+                    seriesWithFilteredEpisodes.push(filteredSeries);
+                }
+            });
+            return res.json(seriesWithFilteredEpisodes);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsMonth: async (req, res, next) => {
+        try {
+            const month = Number(req.params.month);
+
+            const user = await User.findOne({ username: req.params.username })
+                .select("-password")
+                .populate({ path: "series", populate: { path: "episodes" } })
+                .lean();
+
+            const shows = user.series;
+
+            const seriesWithFilteredEpisodes = [];
+
+            shows.map((show) => {
+                const filteredEpisodes = show.episodes.filter((episode) => {
+                    return moment(episode.date_watched).utc().utcOffset("+05:30").month() === month;
+                });
+
+                const {
+                    genres,
+                    spoken_languages,
+                    networks,
+                    origin_country,
+                    production_companies,
+                    production_countries,
+                    ...showInfo
+                } = show;
+
+                if (filteredEpisodes.length > 0) {
+                    const filteredSeries = {
+                        ...showInfo,
+                        episodes: filteredEpisodes.map(({ casts, crews, guest_starts, ...episodeInfo }) => episodeInfo),
+                    };
+
+                    seriesWithFilteredEpisodes.push(filteredSeries);
+                }
+            });
+            return res.json(seriesWithFilteredEpisodes);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsYear: async (req, res, next) => {
+        try {
+            const year = Number(req.params.year);
+
+            const user = await User.findOne({ username: req.params.username })
+                .select("-password")
+                .populate({ path: "series", populate: { path: "episodes" } })
+                .lean();
+
+            const shows = user.series;
+
+            const seriesWithFilteredEpisodes = shows.filter((show) => {
+                return moment(show.first_air_date).utc().utcOffset("+05:30").year() == year;
+            });
+
+            return res.json(seriesWithFilteredEpisodes);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsProductionCompany: async (req, res, next) => {
+        try {
+            const production = String(req.params.production);
+
+            const user = await User.findOne({ username: req.params.username })
+                .select("-password")
+                .populate({ path: "series", populate: { path: "episodes" } })
+                .lean();
+
+            const shows = user.series;
+
+            const seriesWithFilteredEpisodes = shows.filter((show) => {
+                return show.production_companies.some((prod) => prod.name === production);
+            });
+
+            return res.json(seriesWithFilteredEpisodes);
+        } catch (error) {
+            next(error);
+        }
+    },
+
+    getShowsNetwork: async (req, res, next) => {
+        try {
+            const network = String(req.params.network);
+
+            const user = await User.findOne({ username: req.params.username })
+                .select("-password")
+                .populate({ path: "series", populate: { path: "episodes" } })
+                .lean();
+
+            const shows = user.series;
+
+            const seriesWithFilteredEpisodes = shows.filter((show) => {
+                return show.networks.some((prod) => prod.name === network);
+            });
+
+            return res.json(seriesWithFilteredEpisodes);
         } catch (error) {
             next(error);
         }
