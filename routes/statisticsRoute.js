@@ -1,34 +1,38 @@
 const router = require("express").Router();
 
-const statisticsController = require("../controllers/statisticsController");
+const statisticsController = require("../controllers/statistics/userStatisticsController");
+const movieController = require("../controllers/statistics/movieController");
+const showController = require("../controllers/statistics/showController");
 
-router.get("/:username/movies/lastwentyweeks/:week", statisticsController.lastTwentyWeeksMovie);
-router.get("/:username/movies/hourofday/:hour", statisticsController.hourOfDayMovie);
-router.get("/:username/movies/dayofweek/:day", statisticsController.dayOfWeek);
-router.get("/:username/movies/month/:month", statisticsController.month);
-router.get("/:username/movies/year/:year", statisticsController.year);
-router.get("/:username/movies/genre/:genre", statisticsController.getMovieGenre);
-router.get("/:username/movies/language/:language", statisticsController.language);
-router.get("/:username/movies/productioncountry/:country", statisticsController.productionCountry);
-router.get("/:username/movies/actor/:actor", statisticsController.actor);
-router.get("/:username/movies/director/:director", statisticsController.director);
-router.get("/:username/movies/production/:production", statisticsController.production);
+router.get("/:username/movies/week/:week", movieController.getMovieLastTwentyWeekStats);
+router.get("/:username/movies/hour/:hour", movieController.getMovieHourOfDayStats);
+router.get("/:username/movies/day/:day", movieController.getMovieDayOfWeekStats);
+router.get("/:username/movies/month/:month", movieController.getMovieMonthStats);
+router.get("/:username/movies/year/:year", movieController.getMovieYearStats);
+router.get("/:username/movies/genre/:genre", movieController.getMovieGenreStats);
+router.get("/:username/movies/language/:language", movieController.getMovieLanguageStats);
+router.get("/:username/movies/production/country/:country", movieController.getMovieProductionCountryStats);
+router.get("/:username/movies/production/company/:company", movieController.getMovieProductionCompanyStats);
+router.get("/:username/movies/actor/:actor", movieController.getMovieActorStats);
+router.get("/:username/movies/director/:director", movieController.getMovieDirectorStats);
 
-router.get("/:username/shows/genre/:genre", statisticsController.getShowsGenre);
-router.get("/:username/shows/status/:status", statisticsController.getShowsStatus);
-router.get("/:username/shows/language/:language", statisticsController.getShowsLanguage);
-router.get("/:username/shows/origincountry/:country", statisticsController.getShowsOriginCountry);
-router.get("/:username/shows/productioncountry/:country", statisticsController.getShowsProductionCountry);
-router.get("/:username/shows/lastwentyweeks/:week", statisticsController.getShowsLastTwentyWeeks);
-router.get("/:username/shows/hourofday/:hour", statisticsController.getShowsHour);
-router.get("/:username/shows/weekday/:day", statisticsController.getShowsWeekday);
-router.get("/:username/shows/month/:month", statisticsController.getShowsMonth);
-router.get("/:username/shows/year/:year", statisticsController.getShowsYear);
-router.get("/:username/shows/productioncompany/:production", statisticsController.getShowsProductionCompany);
-router.get("/:username/shows/network/:network", statisticsController.getShowsNetwork);
+router.get("/:username/shows/genre/:genre", showController.getShowGenreStats);
+router.get("/:username/shows/status/:status", showController.getShowStatusStats);
+router.get("/:username/shows/language/:language", showController.getShowLanguageStats);
+router.get("/:username/shows/origin/country/:country", showController.getShowOriginCountryStats);
+router.get("/:username/shows/production/country/:country", showController.getShowProductionCountryStats);
+router.get("/:username/shows/week/:week", showController.getShowLastTwentyWeekStats);
+router.get("/:username/shows/hour/:hour", showController.getShowHourOfDayStats);
+router.get("/:username/shows/day/:day", showController.getShowDayOfWeekStats);
+router.get("/:username/shows/month/:month", showController.getShowMonthStats);
+router.get("/:username/shows/year/:year", showController.getShowYearStats);
+router.get("/:username/shows/production/company/:company", showController.getShowProductionCompanyStats);
+router.get("/:username/shows/network/:network", showController.getShowNetworkStats);
 
-router.get("/:username/movies", statisticsController.totalMovieStats);
-router.get("/:username/series", statisticsController.totalSeriesStats);
-router.get("/:username", statisticsController.totalStats);
+router.get("/:username", statisticsController.getAllStats);
+
+//Archived
+router.get("/:username/movies", statisticsController.getAllMovieStats);
+router.get("/:username/series", statisticsController.getAllSeriesStats);
 
 module.exports = router;
