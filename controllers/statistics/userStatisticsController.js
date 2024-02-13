@@ -86,20 +86,15 @@ const statisticsController = {
             }
 
             for (const serie of series) {
-                for (const episode of serie.episodes.filter(
-                    (e) => moment(e.date_watched).utc().utcOffset("+05:30").year() === moment().year()
-                )) {
+                for (const episode of serie.episodes.filter((e) => moment(e.date_watched).utc().utcOffset("+05:30").year() === moment().year())) {
                     if (
                         moment(episode.date_watched).utc().utcOffset("+05:30").format("YYYY-MM-DD") ===
                         moment().utc().utcOffset("+05:30").format("YYYY-MM-DD")
                     )
                         totalWatchedToday++;
-                    if (moment(episode.date_watched).utc().utcOffset("+05:30").week() === moment().week())
-                        totalWatchedThisWeek++;
-                    if (moment(episode.date_watched).utc().utcOffset("+05:30").month() === moment().month())
-                        totalWatchedThisMonth++;
-                    if (moment(episode.date_watched).utc().utcOffset("+05:30").year() === moment().year())
-                        totalWatchedThisYear++;
+                    if (moment(episode.date_watched).utc().utcOffset("+05:30").week() === moment().week()) totalWatchedThisWeek++;
+                    if (moment(episode.date_watched).utc().utcOffset("+05:30").month() === moment().month()) totalWatchedThisMonth++;
+                    if (moment(episode.date_watched).utc().utcOffset("+05:30").year() === moment().year()) totalWatchedThisYear++;
                 }
 
                 for (const genre of serie.genres) {
@@ -107,10 +102,7 @@ const statisticsController = {
                 }
 
                 for (const language of serie.spoken_languages) {
-                    languageSeriesMap.set(
-                        language.english_name,
-                        (languageSeriesMap.get(language.english_name) || 0) + 1
-                    );
+                    languageSeriesMap.set(language.english_name, (languageSeriesMap.get(language.english_name) || 0) + 1);
                 }
 
                 for (const network of serie.networks) {
@@ -122,17 +114,11 @@ const statisticsController = {
                 }
 
                 for (const country of serie.production_countries) {
-                    productionCountriesSeriesMap.set(
-                        country.name,
-                        (productionCountriesSeriesMap.get(country.name) || 0) + 1
-                    );
+                    productionCountriesSeriesMap.set(country.name, (productionCountriesSeriesMap.get(country.name) || 0) + 1);
                 }
 
                 for (const company of serie.production_companies) {
-                    productionCompaniesSeriesMap.set(
-                        company.name,
-                        (productionCompaniesSeriesMap.get(company.name) || 0) + 1
-                    );
+                    productionCompaniesSeriesMap.set(company.name, (productionCompaniesSeriesMap.get(company.name) || 0) + 1);
                 }
 
                 for (const episode of serie.episodes) {
@@ -168,50 +154,40 @@ const statisticsController = {
                 totalEpisode += serie.episodes.length;
             }
 
-            seriesEpisodesDataset = Array.from(seriesEpisodesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
-            );
+            seriesEpisodesDataset = Array.from(seriesEpisodesMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
             hourOfDaySeriesDataset = Array.from(hourMap, ([name, count]) => ({
                 name,
-                hour: getHourAsAMPM(name),
+                label: getHourAsAMPM(name),
                 count,
             })).sort((a, b) => (a.name > b.name ? 1 : -1));
 
-            monthSeriesDataset = Array.from(monthMap, ([name, count]) => ({ name, month: getMonth(name), count })).sort(
-                (a, b) => (a.name > b.name ? 1 : -1)
+            monthSeriesDataset = Array.from(monthMap, ([name, count]) => ({ name, label: getMonth(name), count })).sort((a, b) =>
+                a.name > b.name ? 1 : -1
             );
 
             weekdaySeriesDataset = Array.from(weekdayMap, ([name, count]) => ({
                 name,
-                day: getWeekday(name),
+                label: getWeekday(name),
                 count,
             })).sort((a, b) => (a.name > b.name ? 1 : -1));
 
-            castEpisodeDataset = Array.from(castSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
+            castEpisodeDataset = Array.from(castSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
+
+            lastTwentyWeekWatchedDataset = Array.from(twentyWeekMap, ([name, count]) => ({ name, label: name, count })).sort((a, b) =>
+                a.name > b.name ? 1 : -1
             );
 
-            lastTwentyWeekWatchedDataset = Array.from(twentyWeekMap, ([name, count]) => ({ name, count })).sort(
-                (a, b) => (a.name > b.name ? 1 : -1)
+            genreSeriesDataset = Array.from(genreSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
+            releaseYearSeriesDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, label: name, count })).sort((a, b) =>
+                a.name > b.name ? 1 : -1
             );
+            languageSeriesDataset = Array.from(languageSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
-            genreSeriesDataset = Array.from(genreSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
-            );
-            releaseYearSeriesDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, count })).sort(
-                (a, b) => (a.name > b.name ? 1 : -1)
-            );
-            languageSeriesDataset = Array.from(languageSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
-            );
+            networkSeriesDataset = Array.from(networkSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
-            networkSeriesDataset = Array.from(networkSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+            originCountrySeriesDataset = Array.from(originCountrySeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
                 a.count < b.count ? 1 : -1
-            );
-
-            originCountrySeriesDataset = Array.from(originCountrySeriesMap, ([name, count]) => ({ name, count })).sort(
-                (a, b) => (a.count < b.count ? 1 : -1)
             );
 
             productionCountriesSeriesDataset = Array.from(productionCountriesSeriesMap, ([name, count]) => ({
@@ -224,9 +200,7 @@ const statisticsController = {
                 count,
             })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
-            statusSeriesDataset = Array.from(statusSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
-            );
+            statusSeriesDataset = Array.from(statusSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
             const avgRatingSeries = totalWatchedRating / totalEpisode;
 
@@ -294,20 +268,15 @@ const statisticsController = {
                 currentWeekMovies = currentWeekMovies === 1 ? 52 : currentWeekMovies - 1;
             }
 
-            for (const movie of movies.filter(
-                (e) => moment(e.date_watched).utc().utcOffset("+05:30").year() === moment().year()
-            )) {
+            for (const movie of movies.filter((e) => moment(e.date_watched).utc().utcOffset("+05:30").year() === moment().year())) {
                 if (
                     moment(movie.date_watched).utc().utcOffset("+05:30").format("YYYY-MM-DD") ===
                     moment().utc().utcOffset("+05:30").format("YYYY-MM-DD")
                 )
                     totalWatchedMoviesToday++;
-                if (moment(movie.date_watched).utc().utcOffset("+05:30").week() === moment().week())
-                    totalWatchedMoviesThisWeek++;
-                if (moment(movie.date_watched).utc().utcOffset("+05:30").month() === moment().month())
-                    totalWatchedMoviesThisMonth++;
-                if (moment(movie.date_watched).utc().utcOffset("+05:30").year() === moment().year())
-                    totalWatchedMoviesThisYear++;
+                if (moment(movie.date_watched).utc().utcOffset("+05:30").week() === moment().week()) totalWatchedMoviesThisWeek++;
+                if (moment(movie.date_watched).utc().utcOffset("+05:30").month() === moment().month()) totalWatchedMoviesThisMonth++;
+                if (moment(movie.date_watched).utc().utcOffset("+05:30").year() === moment().year()) totalWatchedMoviesThisYear++;
             }
 
             for (const movie of movies) {
@@ -335,17 +304,11 @@ const statisticsController = {
                 }
 
                 for (const country of movie.production_countries) {
-                    productionCountriesMovieMap.set(
-                        country.name,
-                        (productionCountriesMovieMap.get(country.name) || 0) + 1
-                    );
+                    productionCountriesMovieMap.set(country.name, (productionCountriesMovieMap.get(country.name) || 0) + 1);
                 }
 
                 for (const company of movie.production_companies) {
-                    productionCompaniesMovieMap.set(
-                        company.name,
-                        (productionCompaniesMovieMap.get(company.name) || 0) + 1
-                    );
+                    productionCompaniesMovieMap.set(company.name, (productionCompaniesMovieMap.get(company.name) || 0) + 1);
                 }
 
                 for (const cast of movie.casts) {
@@ -358,10 +321,7 @@ const statisticsController = {
                 });
 
                 if (releaseYearMovieMap.has(moment(movie.release_date).year())) {
-                    releaseYearMovieMap.set(
-                        moment(movie.release_date).year(),
-                        releaseYearMovieMap.get(moment(movie.release_date).year()) + 1
-                    );
+                    releaseYearMovieMap.set(moment(movie.release_date).year(), releaseYearMovieMap.get(moment(movie.release_date).year()) + 1);
                 } else {
                     releaseYearMovieMap.set(moment(movie.release_date).year(), 1);
                 }
@@ -371,37 +331,33 @@ const statisticsController = {
             }
             weekdayMoviesDataset = Array.from(weekMovieMap, ([name, count]) => ({
                 name,
-                day: getWeekday(name),
+                label: getWeekday(name),
                 count,
             })).sort((a, b) => (a.name > b.name ? 1 : -1));
 
             monthMoviesDataset = Array.from(monthMovieMap, ([name, count]) => ({
                 name,
-                month: getMonth(name),
+                label: getMonth(name),
                 count,
             })).sort((a, b) => (a.name > b.name ? 1 : -1));
 
             hourOfDayMoviesDataset = Array.from(hourOfDayMovieMap, ([name, count]) => ({
                 name,
-                hour: getHourAsAMPM(name),
+                label: getHourAsAMPM(name),
                 count,
             })).sort((a, b) => (a.name > b.name ? 1 : -1));
 
-            lastTwentyWeekMoviesDataset = Array.from(twentyWeekMovieMap, ([name, count]) => ({ name, count })).sort(
-                (a, b) => (a.name > b.name ? 1 : -1)
+            lastTwentyWeekMoviesDataset = Array.from(twentyWeekMovieMap, ([name, count]) => ({ name, label: name, count })).sort((a, b) =>
+                a.name > b.name ? 1 : -1
             );
 
-            genreMovieDataset = Array.from(genreMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
+            genreMovieDataset = Array.from(genreMovieMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
+
+            releaseYearMovieDataset = Array.from(releaseYearMovieMap, ([name, count]) => ({ name, label: name, count })).sort((a, b) =>
+                a.name > b.name ? 1 : -1
             );
 
-            releaseYearMovieDataset = Array.from(releaseYearMovieMap, ([name, count]) => ({ name, count })).sort(
-                (a, b) => (a.name > b.name ? 1 : -1)
-            );
-
-            languageMovieDataset = Array.from(languageMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
-            );
+            languageMovieDataset = Array.from(languageMovieMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
             productionCountriesMovieDataset = Array.from(productionCountriesMovieMap, ([name, count]) => ({
                 name,
@@ -413,13 +369,9 @@ const statisticsController = {
                 count,
             })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
-            castMovieDataset = Array.from(castMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
-            );
+            castMovieDataset = Array.from(castMovieMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
-            directorMovieDataset = Array.from(directorMovieMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.count < b.count ? 1 : -1
-            );
+            directorMovieDataset = Array.from(directorMovieMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.count < b.count ? 1 : -1));
 
             const avgRatingMovie = totalRatingMovie / totalMovies;
 
@@ -522,10 +474,7 @@ const statisticsController = {
                 });
 
                 if (releaseYearMap.has(moment(movie.release_date).year())) {
-                    releaseYearMap.set(
-                        moment(movie.release_date).year(),
-                        releaseYearMap.get(moment(movie.release_date).year()) + 1
-                    );
+                    releaseYearMap.set(moment(movie.release_date).year(), releaseYearMap.get(moment(movie.release_date).year()) + 1);
                 } else {
                     releaseYearMap.set(moment(movie.release_date).year(), 1);
                 }
@@ -538,9 +487,7 @@ const statisticsController = {
             const languageDataset = Array.from(languageMap, ([name, count]) => ({ name, count }));
             const productionCountriesDataset = Array.from(productionCountriesMap, ([name, count]) => ({ name, count }));
             const productionCompaniesDataset = Array.from(productionCompaniesMap, ([name, count]) => ({ name, count }));
-            const releaseYearDataset = Array.from(releaseYearMap, ([name, count]) => ({ name, count })).sort((a, b) =>
-                a.name > b.name ? 1 : -1
-            );
+            const releaseYearDataset = Array.from(releaseYearMap, ([name, count]) => ({ name, count })).sort((a, b) => (a.name > b.name ? 1 : -1));
             const castDataset = Array.from(castMap, ([name, count]) => ({ name, count }));
             const directorDataset = Array.from(directorMap, ([name, count]) => ({ name, count }));
 
@@ -639,8 +586,8 @@ const statisticsController = {
             const productionCompaniesDataset = Array.from(productionCompaniesMap, ([name, count]) => ({ name, count }));
             const productionCountriesDataset = Array.from(productionCountriesMap, ([name, count]) => ({ name, count }));
             const statusDataset = Array.from(statusMap, ([name, count]) => ({ name, count }));
-            const releaseYearDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, count })).sort(
-                (a, b) => (a.name > b.name ? 1 : -1)
+            const releaseYearDataset = Array.from(releaseYearSeriesMap, ([name, count]) => ({ name, count })).sort((a, b) =>
+                a.name > b.name ? 1 : -1
             );
 
             const avgRating = totalWatchedRating / totalEpisode;
